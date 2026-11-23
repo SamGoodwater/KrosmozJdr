@@ -5,10 +5,13 @@ declare(strict_types=1);
 /**
  * Traits permanents jouables.
  *
- * - `level` : puissance, de 1 (faible) à 20 (très fort). Un personnage ne prend pas un trait au-dessus de son niveau.
+ * - `level` : puissance. 1–3 très peu puissant, 4–6 peu puissant, 7–9 normal, 10–12 puissant, 13+ très puissant.
+ *   La plupart des parties jouent autour du niveau 5 ou 6 : la majorité des traits est donc à 6 ou moins.
+ *   Un personnage ne prend pas un trait au-dessus de son niveau.
  * - `available_for_characters` : vrai = un PJ ou un PNJ peut le prendre. Faux = créatures seulement.
+ * - Rangs : « novice », « expérimenté », « maître ». Le rang supérieur remplace l’inférieur. On ne cumule pas.
  *
- * Plus de traits bas (1–4) que de traits hauts. Les dons D&D d’armes, d’armures et de niveaux de sorts
+ * Plus de traits bas que de traits hauts. Les dons D&D d’armes, d’armures et de niveaux de sorts
  * ne sont pas repris : ici l’arme ne fait que donner des caractéristiques, on ne porte pas d’armure,
  * et un sort ne se paie pas en emplacements.
  *
@@ -208,8 +211,18 @@ $traits = [
         'image' => $icon('specialise.png'),
     ],
     [
-        'name' => 'Rapide',
+        'name' => 'Rapide - novice',
+        'description' => 'Tes PM de base augmentent de 1.',
+        'image' => $icon('rapide.png'),
+    ],
+    [
+        'name' => 'Rapide - expérimenté',
         'description' => 'Tes PM de base augmentent de 2. Tu enlèves 1 PV gagné à chaque niveau, y compris au niveau 1 (0 possible).',
+        'image' => $icon('rapide.png'),
+    ],
+    [
+        'name' => 'Rapide - maître',
+        'description' => 'Tes PM de base augmentent de 3. Tu enlèves 1 PV gagné à chaque niveau, y compris au niveau 1 (0 possible).',
         'image' => $icon('rapide.png'),
     ],
     [
@@ -228,13 +241,28 @@ $traits = [
         'image' => $icon('polyglotte.png'),
     ],
     [
-        'name' => 'Cuisinier',
-        'description' => 'Pendant un repos, tu prépares un repas. Une créature récupère 1d4 PV. 1×/jour.',
+        'name' => 'Cuisinier - novice',
+        'description' => 'Pendant un repos court ou long, tu prépares un repas. Une créature récupère 1d4 PV. 1 fois entre deux repos longs.',
         'image' => $icon('cuisinier.png'),
     ],
     [
-        'name' => 'Guérisseur',
-        'description' => 'Hors combat, en 10 minutes : tu soignes 1d4 PV ou tu stabilises. 1×/créature/repos.',
+        'name' => 'Cuisinier - expérimenté',
+        'description' => 'Pendant un repos court ou long, tu prépares un repas. Chaque allié·e présent·e récupère 1d4 PV. 1 fois entre deux repos longs.',
+        'image' => $icon('cuisinier.png'),
+    ],
+    [
+        'name' => 'Guérisseur - novice',
+        'description' => 'Hors combat, en 10 minutes : tu soignes 1d4 PV ou tu stabilises. 1 fois par créature, entre deux repos courts ou longs.',
+        'image' => $icon('guerisseur.png'),
+    ],
+    [
+        'name' => 'Guérisseur - expérimenté',
+        'description' => 'Hors combat, en 10 minutes : tu soignes 1d6 PV ou tu stabilises. 1 fois par créature, entre deux repos courts ou longs.',
+        'image' => $icon('guerisseur.png'),
+    ],
+    [
+        'name' => 'Guérisseur - maître',
+        'description' => 'Hors combat, en 10 minutes : tu soignes 1d8 PV ou tu stabilises. 1 fois par créature, entre deux repos courts ou longs.',
         'image' => $icon('guerisseur.png'),
     ],
     [
@@ -249,7 +277,7 @@ $traits = [
     ],
     [
         'name' => 'Initié',
-        'description' => '1×/repos, hors combat : une petite lumière, un message court, ou tu ouvres une serrure simple.',
+        'description' => '1 fois entre deux repos courts ou longs, hors combat : une petite lumière, un message court, ou tu ouvres une serrure simple.',
         'image' => $icon('initie.png'),
     ],
     [
@@ -258,28 +286,68 @@ $traits = [
         'image' => $icon('souple.png'),
     ],
     [
-        'name' => 'Résistance au poison',
+        'name' => 'Résistance au poison - novice',
+        'description' => 'Tu as un avantage aux sauvegardes contre le poison.',
+        'image' => $icon('resistance-au-poison.png'),
+    ],
+    [
+        'name' => 'Résistance au poison - expérimenté',
         'description' => 'Tu as un avantage aux sauvegardes contre le poison. Les dégâts de poison que tu subis sont divisés par 2.',
         'image' => $icon('resistance-au-poison.png'),
     ],
     [
-        'name' => 'Sentinelle',
+        'name' => 'Sentinelle - novice',
         'description' => 'Quand tu tacles, la cible perd aussi 1 PM.',
         'image' => $icon('sentinelle.png'),
     ],
     [
-        'name' => 'Second souffle',
-        'description' => '1×/repos, pour 2 PA : tu récupères 1d6 PV.',
+        'name' => 'Sentinelle - expérimenté',
+        'description' => 'Quand tu tacles, la cible perd aussi 2 PM.',
+        'image' => $icon('sentinelle.png'),
+    ],
+    [
+        'name' => 'Second souffle - novice',
+        'description' => '1 fois entre deux repos courts ou longs, pour 2 PA : tu récupères 1d6 PV.',
         'image' => $icon('second-souffle.png'),
     ],
     [
-        'name' => 'Charge',
+        'name' => 'Second souffle - expérimenté',
+        'description' => '1 fois entre deux repos courts ou longs, pour 2 PA : tu récupères 2d6 PV.',
+        'image' => $icon('second-souffle.png'),
+    ],
+    [
+        'name' => 'Second souffle - maître',
+        'description' => '1 fois entre deux repos courts ou longs, pour 2 PA : tu récupères 3d6 PV.',
+        'image' => $icon('second-souffle.png'),
+    ],
+    [
+        'name' => 'Charge - novice',
         'description' => 'Si tu avances d’au moins 3 cases en ligne droite avant une attaque au contact, tu ajoutes 1d4 aux dégâts.',
         'image' => $icon('charge.png'),
     ],
     [
-        'name' => 'Meneur',
-        'description' => '1×/repos, un discours : tes alliés à 2 cases ou moins gagnent 1d4 PV temporaires.',
+        'name' => 'Charge - expérimenté',
+        'description' => 'Si tu avances d’au moins 3 cases en ligne droite avant une attaque au contact, tu ajoutes 1d6 aux dégâts.',
+        'image' => $icon('charge.png'),
+    ],
+    [
+        'name' => 'Charge - maître',
+        'description' => 'Si tu avances d’au moins 3 cases en ligne droite avant une attaque au contact, tu ajoutes 1d8 aux dégâts.',
+        'image' => $icon('charge.png'),
+    ],
+    [
+        'name' => 'Meneur - novice',
+        'description' => '1 fois entre deux repos courts ou longs, un discours : tes alliés à 2 cases ou moins gagnent 1d4 PV temporaires.',
+        'image' => $icon('meneur.png'),
+    ],
+    [
+        'name' => 'Meneur - expérimenté',
+        'description' => '1 fois entre deux repos courts ou longs, un discours : tes alliés à 2 cases ou moins gagnent 1d6 PV temporaires.',
+        'image' => $icon('meneur.png'),
+    ],
+    [
+        'name' => 'Meneur - maître',
+        'description' => '1 fois entre deux repos courts ou longs, un discours : tes alliés à 2 cases ou moins gagnent 1d8 PV temporaires.',
         'image' => $icon('meneur.png'),
     ],
     [
@@ -288,22 +356,47 @@ $traits = [
         'image' => $icon('endurci.png'),
     ],
     [
-        'name' => 'Brise-sort',
-        'description' => 'Si une créature lance un sort à 1 case de toi, tu peux réagir : son jet d’attaque de ce sort a un désavantage. 1×/tour.',
+        'name' => 'Brise-sort - novice',
+        'description' => 'Si une créature lance un sort à 1 case de toi, tu peux réagir : son jet d’attaque de ce sort a un désavantage. 1 fois entre deux repos courts ou longs.',
         'image' => $icon('brise-sort.png'),
     ],
     [
-        'name' => 'Dur à cuire',
+        'name' => 'Brise-sort - expérimenté',
+        'description' => 'Si une créature lance un sort à 1 case de toi, tu peux réagir : son jet d’attaque de ce sort a un désavantage. 1 fois par tour.',
+        'image' => $icon('brise-sort.png'),
+    ],
+    [
+        'name' => 'Dur à cuire - novice',
         'description' => 'Tu gagnes 1 PV de plus à chaque niveau, y compris au niveau 1.',
         'image' => $icon('dur-a-cuire.png'),
     ],
     [
-        'name' => 'Adepte élémentaire',
-        'description' => 'Tu choisis Feu, Eau, Air ou Terre. Tes dégâts de cet élément ignorent l’état Résistant. Invulnérable s’applique toujours.',
+        'name' => 'Dur à cuire - expérimenté',
+        'description' => 'Tu gagnes 2 PV de plus à chaque niveau, y compris au niveau 1.',
+        'image' => $icon('dur-a-cuire.png'),
+    ],
+    [
+        'name' => 'Dur à cuire - maître',
+        'description' => 'Tu gagnes 3 PV de plus à chaque niveau, y compris au niveau 1.',
+        'image' => $icon('dur-a-cuire.png'),
+    ],
+    [
+        'name' => 'Adepte élémentaire - novice',
+        'description' => 'Tu choisis Feu, Eau, Air ou Terre. Tu ajoutes 1 aux dégâts de cet élément.',
         'image' => $icon('adepte-elementaire.png'),
     ],
     [
-        'name' => 'Inébranlable',
+        'name' => 'Adepte élémentaire - expérimenté',
+        'description' => 'Tu choisis Feu, Eau, Air ou Terre. Tu ajoutes 1 aux dégâts de cet élément, et ces dégâts ignorent l’état Résistant. Invulnérable s’applique toujours.',
+        'image' => $icon('adepte-elementaire.png'),
+    ],
+    [
+        'name' => 'Inébranlable - novice',
+        'description' => 'Tu as un avantage aux sauvegardes contre le charme et la terreur.',
+        'image' => $icon('inebranlable.png'),
+    ],
+    [
+        'name' => 'Inébranlable - expérimenté',
         'description' => 'Tu as un avantage aux sauvegardes contre le charme et la terreur. Une créature de niveau inférieur au tien ne peut ni te charmer ni te terroriser.',
         'image' => $icon('inebranlable.png'),
     ],
@@ -331,10 +424,13 @@ $power = [
     'Méfiant' => [1, true],
     'Engageant' => [1, true],
     'Abrupt' => [1, true],
-    'Pisteur' => [1, true],
     'Polyglotte' => [1, true],
-    'Cuisinier' => [1, true],
-    'Petite taille' => [4, false],
+    'Cuisinier - novice' => [1, true],
+    'Pisteur' => [2, true],
+    'Initié' => [2, true],
+    'Dur à cuire - novice' => [2, true],
+    'Furtif' => [3, true],
+    'Petite taille' => [3, false],
     'Courageux' => [4, true],
     'Passionné' => [4, true],
     'Vigoureux' => [4, true],
@@ -344,35 +440,50 @@ $power = [
     'Insaisissable' => [4, true],
     'Infatigable' => [4, true],
     'Nyctalope' => [4, true],
-    'Guérisseur' => [4, true],
-    'Furtif' => [4, true],
     'Athlète' => [4, true],
-    'Initié' => [4, true],
-    'Souple' => [4, true],
-    'Grande taille' => [8, false],
-    'Lourd' => [8, false],
-    'Métaboliseur rapide' => [8, false],
-    'Agressif' => [8, true],
-    'Brutal' => [8, true],
-    'Bagarreur' => [8, true],
-    'Musculeux' => [8, true],
-    'Prudent' => [8, true],
-    'Lent' => [8, true],
-    'Résistance au poison' => [8, true],
-    'Sentinelle' => [8, true],
-    'Second souffle' => [8, true],
-    'Charge' => [8, true],
-    'Meneur' => [8, true],
-    'Agile' => [12, false],
-    'Insensible aux poisons' => [12, false],
-    'Rapide' => [12, true],
-    'Endurci' => [12, true],
-    'Brise-sort' => [12, true],
-    'Dur à cuire' => [12, true],
-    'Vif / Vive' => [16, false],
-    'Gigantesque' => [16, false],
-    'Adepte élémentaire' => [16, true],
-    'Inébranlable' => [20, true],
+    'Guérisseur - novice' => [4, true],
+    'Souple' => [5, true],
+    'Grande taille' => [5, false],
+    'Agressif' => [5, true],
+    'Musculeux' => [5, true],
+    'Résistance au poison - novice' => [5, true],
+    'Second souffle - novice' => [5, true],
+    'Charge - novice' => [5, true],
+    'Brutal' => [6, true],
+    'Bagarreur' => [6, true],
+    'Prudent' => [6, true],
+    'Lent' => [6, true],
+    'Sentinelle - novice' => [6, true],
+    'Meneur - novice' => [6, true],
+    'Rapide - novice' => [6, true],
+    'Cuisinier - expérimenté' => [6, true],
+    'Métaboliseur rapide' => [6, false],
+    'Brise-sort - novice' => [6, true],
+    'Inébranlable - novice' => [6, true],
+    'Adepte élémentaire - novice' => [6, true],
+    'Lourd' => [7, false],
+    'Guérisseur - expérimenté' => [7, true],
+    'Dur à cuire - expérimenté' => [7, true],
+    'Endurci' => [8, true],
+    'Résistance au poison - expérimenté' => [8, true],
+    'Second souffle - expérimenté' => [8, true],
+    'Charge - expérimenté' => [8, true],
+    'Sentinelle - expérimenté' => [9, true],
+    'Meneur - expérimenté' => [9, true],
+    'Insensible aux poisons' => [10, false],
+    'Rapide - expérimenté' => [10, true],
+    'Agile' => [11, false],
+    'Adepte élémentaire - expérimenté' => [11, true],
+    'Guérisseur - maître' => [11, true],
+    'Brise-sort - expérimenté' => [11, true],
+    'Charge - maître' => [12, true],
+    'Gigantesque' => [13, false],
+    'Inébranlable - expérimenté' => [13, true],
+    'Second souffle - maître' => [13, true],
+    'Vif / Vive' => [14, false],
+    'Dur à cuire - maître' => [14, true],
+    'Meneur - maître' => [14, true],
+    'Rapide - maître' => [15, true],
 ];
 
 return array_map(static function (array $trait) use ($power): array {

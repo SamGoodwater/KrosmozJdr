@@ -162,7 +162,7 @@ export function getCreatureTraitFieldDescriptors(ctx = {}) {
           type: "number",
           required: false,
           showInCompact: true,
-          help: "Puissance, de 1 (faible) à 20 (très fort). Un personnage ne peut pas prendre un trait au-dessus de son niveau.",
+          help: "1 à 3 très peu puissant, 4 à 6 peu puissant, 7 à 9 normal, 10 à 12 puissant, 13 et plus très puissant. Un personnage ne prend pas un trait au-dessus de son niveau.",
           validation: { min: 1, max: 20 },
           bulk: { enabled: true, nullable: true },
         },
