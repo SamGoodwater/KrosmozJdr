@@ -39,6 +39,29 @@ return [
         'Crâ' => 'Chasse, piste, arc — sans recoller Explorateur.',
         'Eniripsa' => 'Soins par les plantes plutôt que par les larmes.',
     ],
+    'styles_at' => 3,
+    'styles' => [
+        'meute' => [
+            'name' => 'Meute',
+            'blurb' => 'Tu demandes. La bête répond, ou elle s’en va. Tu n’invoques pas un tank.',
+            'save' => 'la Chance',
+        ],
+        'racine' => [
+            'name' => 'Racine',
+            'blurb' => 'Tu nommes ce qui pousse. Tu sais quoi laisser en terre.',
+            'save' => 'l’Intelligence',
+        ],
+        'saison' => [
+            'name' => 'Saison',
+            'blurb' => 'L’année est sur ta peau. La pluie, le gel, la marche.',
+            'save' => 'la Vitalité',
+        ],
+        'taniere' => [
+            'name' => 'Tanière',
+            'blurb' => 'Un lieu te connaît. Tu te couches là où il veut bien.',
+            'save' => 'la Force',
+        ],
+    ],
     'levels' => [
         1 => [
             'choice' => $choices[1],
@@ -75,6 +98,7 @@ return [
             ],
         ],
         3 => [
+            'unlock_style' => true,
             'choice' => $choices[3],
             'flavor' => 'Tes pas ne font plus de bruit dans la mousse. Les bêtes te jaugent avant de fuir.',
             'capacities' => [

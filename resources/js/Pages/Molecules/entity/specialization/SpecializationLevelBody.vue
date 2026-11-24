@@ -123,6 +123,7 @@ const capacityTitle = computed(() => {
             v-if="hasNarrative"
             :html="narrativeHtml"
             :enable-rich-references="enableRichReferences"
+            :specialization-slug="specializationSlug"
             class="spe-level-narrative w-full max-w-none text-sm text-base-content/85 prose prose-invert prose-sm"
         />
 

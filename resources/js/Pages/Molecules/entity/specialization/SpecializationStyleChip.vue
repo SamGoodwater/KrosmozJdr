@@ -87,10 +87,11 @@ const iconSize = computed(() => {
 
 <style scoped>
 .spe-style-chip--marker {
-    border: 1px solid color-mix(in oklch, white 18%, transparent);
-    backdrop-filter: blur(4px);
+    border: none;
+    background: transparent;
     box-shadow: none;
     line-height: 1.25;
+    padding: 0;
 }
 .spe-style-chip--marker .spe-style-chip__label {
     font-weight: 700;

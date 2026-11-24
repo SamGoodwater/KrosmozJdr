@@ -39,6 +39,24 @@ return [
         'Enutrof' => 'La chaîne complète : minerai, lingot, vente.',
         'Steamer' => 'La machine et l’établi : deux façons de faire tenir un objet.',
     ],
+    'styles_at' => 3,
+    'styles' => [
+        'forgeron' => [
+            'name' => 'Forgeron',
+            'blurb' => 'Tu chauffes, tu frappes, tu sors le minerai. La pièce doit tenir un coup.',
+            'save' => 'la Force',
+        ],
+        'faconneur' => [
+            'name' => 'Façonneur',
+            'blurb' => 'Tu coupes, tu couds, tu ajustes. Le bois, le cuir, le tissu ou la pierre prennent la forme qu’il faut.',
+            'save' => 'l’Agilité',
+        ],
+        'alchimiste' => [
+            'name' => 'Alchimiste',
+            'blurb' => 'Tu mesures, tu fais macérer, tu goûtes du bout des lèvres.',
+            'save' => 'la Sagesse',
+        ],
+    ],
     'levels' => [
         1 => [
             'choice' => $choices[1],
@@ -76,6 +94,7 @@ return [
             ],
         ],
         3 => [
+            'unlock_style' => true,
             'choice' => $choices[3],
             'flavor' => 'On te laisse un établi. Tu commences à copier ce que tu as vu, pas seulement ce qu’on t’a appris.',
             'capacities' => [

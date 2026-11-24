@@ -39,6 +39,29 @@ return [
         'Forgelance' => 'L’avant-garde qui plante la lance et le camp.',
         'Sram' => 'Les traces qu’on ne veut pas laisser, tu les lis quand même.',
     ],
+    'styles_at' => 3,
+    'styles' => [
+        'guide' => [
+            'name' => 'Guide',
+            'blurb' => 'Le prochain repère, le croisement, le temps à pied. Les autres arrivent parce que tu sais où.',
+            'save' => 'la Sagesse',
+        ],
+        'pisteur-euse' => [
+            'name' => 'Pisteur·euse',
+            'blurb' => 'Qui est passé, combien, depuis quand. La trace est une question, et tu as la réponse.',
+            'save' => 'l’Intelligence',
+        ],
+        'eclaireur-euse' => [
+            'name' => 'Éclaireur·euse',
+            'blurb' => 'Tu passes devant. La corde, le mauvais pas, le piège qui n’est pas encore tendu.',
+            'save' => 'la Force',
+        ],
+        'campeur-euse' => [
+            'name' => 'Campeur·euse',
+            'blurb' => 'L’eau, le vent, l’abri. Tu sais où la nuit peut se poser.',
+            'save' => 'la Vitalité',
+        ],
+    ],
     'levels' => [
         1 => [
             'choice' => $choices[1],
@@ -75,6 +98,7 @@ return [
             ],
         ],
         3 => [
+            'unlock_style' => true,
             'choice' => $choices[3],
             'flavor' => 'Tu ne te perds plus. Les autres, parfois, si tu les lâches.',
             'capacities' => [

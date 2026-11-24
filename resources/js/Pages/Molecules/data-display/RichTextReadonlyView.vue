@@ -20,14 +20,25 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    /** Slug de la spécialisation, pour l’icône de chaque style. */
+    specializationSlug: {
+        type: String,
+        default: "artiste",
+    },
 });
 
 const rootRef = ref(null);
 
 const sanitizedHtml = computed(() => sanitizeHtml(props.html || ""));
-const useKrefTree = computed(
-    () => props.enableRichReferences && htmlContainsKrefMarkers(sanitizedHtml.value),
-);
+const useKrefTree = computed(() => {
+    if (!props.enableRichReferences) return false;
+    const html = sanitizedHtml.value;
+    return (
+        htmlContainsKrefMarkers(html) ||
+        /\bspe-style\b/.test(html) ||
+        /\bdata-spe-style=/.test(html)
+    );
+});
 const tree = computed(() => (useKrefTree.value ? parseRichTextHtml(sanitizedHtml.value) : []));
 </script>
 
@@ -38,7 +49,12 @@ const tree = computed(() => (useKrefTree.value ? parseRichTextHtml(sanitizedHtml
             class="rich-text-readonly prose prose-sm max-w-none"
         >
             <template v-if="useKrefTree">
-                <RichTextHtmlTree v-for="(node, index) in tree" :key="index" :node="node" />
+                <RichTextHtmlTree
+                    v-for="(node, index) in tree"
+                    :key="index"
+                    :node="node"
+                    :specialization-slug="specializationSlug"
+                />
             </template>
             <!-- eslint-disable-next-line vue/no-v-html -- contenu sanitizé, sans puce kref -->
             <div v-else v-html="sanitizedHtml" />

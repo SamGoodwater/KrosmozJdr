@@ -107,12 +107,9 @@ final class DraftSpecializationContentRenderer
                 }
             }
 
-            $stylesAt = (int) ($spec['styles_at'] ?? 3);
             $styles = $this->stylesOf($spec);
             if ($styles !== []) {
-                $parts[] = '<h2>Styles (niveau '.$stylesAt.')</h2>'
-                    .'<p>Au niveau '.$stylesAt.', tu choisis <strong>un</strong> style. Il fixe ta 2ᵉ sauvegarde et colore certaines capacités. Le niveau 1 reste commun à tous les Artistes.</p>'
-                    .$this->stylesSummaryHtml($styles);
+                $parts[] = $this->stylesIntroHtml($spec, $styles);
             }
 
             $parts[] = '<h2>Comment lire un niveau</h2><p>'
@@ -132,6 +129,11 @@ final class DraftSpecializationContentRenderer
                 .'puis une option. Ça ne donne jamais de points de caractéristique. '
                 .'Les aptitudes arrivent aux niveaux 3, 9 et 15.'
                 .'</p>';
+
+            $styles = $this->stylesOf($spec);
+            if ($styles !== []) {
+                $parts[] = $this->stylesIntroHtml($spec, $styles);
+            }
         }
 
         $difference = trim((string) ($spec['difference'] ?? ''));
@@ -204,6 +206,21 @@ final class DraftSpecializationContentRenderer
         $styles = $spec['styles'] ?? $spec['archetypes'] ?? [];
 
         return is_array($styles) ? $styles : [];
+    }
+
+    /**
+     * Bloc « Styles » : une pastille par style (icône sans fond, hydratée côté front).
+     *
+     * @param  array<string, mixed>  $spec
+     * @param  array<string, mixed>  $styles
+     */
+    private function stylesIntroHtml(array $spec, array $styles): string
+    {
+        $stylesAt = (int) ($spec['styles_at'] ?? 3);
+
+        return '<h2>Styles (niveau '.$stylesAt.')</h2>'
+            .'<p>Au niveau '.$stylesAt.', tu choisis <strong>un</strong> style. Il fixe ta 2ᵉ sauvegarde et colore certaines capacités. Le niveau 1 reste commun.</p>'
+            .$this->stylesSummaryHtml($styles);
     }
 
     /**

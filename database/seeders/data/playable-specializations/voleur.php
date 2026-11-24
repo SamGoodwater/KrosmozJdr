@@ -39,6 +39,29 @@ return [
         'Ecaflip' => 'Le bluff et la poche : tu joues, tu ramasses.',
         'Crâ' => 'Toits et distance : tu entres sans bruit, tu sors plus haut.',
     ],
+    'styles_at' => 3,
+    'styles' => [
+        'tire-laine' => [
+            'name' => 'Tire-laine',
+            'blurb' => 'La poche, le cordon, la boucle. Tu prends pendant qu’on parle.',
+            'save' => 'la Chance',
+        ],
+        'cambrioleur-euse' => [
+            'name' => 'Cambrioleur·euse',
+            'blurb' => 'La serrure, le plan de la porte, le moment où la maison est vide.',
+            'save' => 'l’Intelligence',
+        ],
+        'ombre' => [
+            'name' => 'Ombre',
+            'blurb' => 'On se retourne. Tu es déjà ailleurs. Tu sais quand un regard se pose.',
+            'save' => 'la Sagesse',
+        ],
+        'gouttiere' => [
+            'name' => 'Gouttière',
+            'blurb' => 'Tu entres par le haut. Tu sors plus haut. Le toit est une rue.',
+            'save' => 'la Force',
+        ],
+    ],
     'levels' => [
         1 => [
             'choice' => $choices[1],
@@ -76,6 +99,7 @@ return [
             ],
         ],
         3 => [
+            'unlock_style' => true,
             'choice' => $choices[3],
             'flavor' => 'On te parle comme à un des leurs. Même si tu ne l’es pas encore.',
             'capacities' => [

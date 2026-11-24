@@ -13,6 +13,10 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    specializationSlug: {
+        type: String,
+        default: "artiste",
+    },
 });
 
 const speStyleKey = computed(() => {
@@ -44,11 +48,17 @@ const speStyleLabel = computed(() => {
         v-else-if="speStyleKey"
         :style-key="speStyleKey"
         :label="speStyleLabel"
+        :specialization-slug="specializationSlug"
         appearance="marker"
         size="md"
     />
     <component :is="node.tag" v-else-if="node.kind === 'el'" v-bind="node.attrs">
-        <RichTextHtmlTree v-for="(child, index) in node.children" :key="index" :node="child" />
+        <RichTextHtmlTree
+            v-for="(child, index) in node.children"
+            :key="index"
+            :node="child"
+            :specialization-slug="specializationSlug"
+        />
     </component>
     <template v-else>{{ node.text }}</template>
 </template>

@@ -2833,6 +2833,13 @@
     "file": "entity/aptitude/AptitudeLineRow.vue"
   },
   {
+    "name": "AptitudeIcon",
+    "description": "AptitudeIcon — Pictogramme d’aptitude sur fond en forme de bouclier.",
+    "props": [],
+    "slots": [],
+    "file": "entity/aptitude/AptitudeIcon.vue"
+  },
+  {
     "name": "ToggleField",
     "description": "ToggleField Molecule (DaisyUI, Atomic Design)",
     "props": [],

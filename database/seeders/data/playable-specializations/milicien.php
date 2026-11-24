@@ -39,6 +39,29 @@ return [
         'Sacrieur' => 'La douleur partagée devient un ordre, pas un chaos.',
         'Pandawa' => 'Le corps-à-corps qui pousse, porte et ramène.',
     ],
+    'styles_at' => 3,
+    'styles' => [
+        'bonta' => [
+            'name' => 'Bonta',
+            'blurb' => 'Les remparts sont blancs. Tu ouvres le passage, tu couvres la foule, tu fais les choses dans l’ordre.',
+            'save' => 'la Sagesse',
+        ],
+        'brakmar' => [
+            'name' => 'Brâkmar',
+            'blurb' => 'Les rues sont noires. On ne discute pas longtemps. Tu pousses, tu encaisses, tu dégages.',
+            'save' => 'la Vitalité',
+        ],
+        'astrub' => [
+            'name' => 'Astrub',
+            'blurb' => 'Entre les deux cités, l’insigne est neutre. Tu lis la ruelle avant le coup.',
+            'save' => 'l’Agilité',
+        ],
+        'amakna' => [
+            'name' => 'Amakna',
+            'blurb' => 'Le bourg, le chemin, la place. Tu connais chaque porte, et c’est toi qui écris le rapport.',
+            'save' => 'l’Intelligence',
+        ],
+    ],
     'levels' => [
         1 => [
             'choice' => $choices[1],
@@ -78,6 +101,7 @@ return [
             ],
         ],
         3 => [
+            'unlock_style' => true,
             'choice' => $choices[3],
             'flavor' => 'On ne te laisse plus seul·e au premier rang. Quelqu’un colle à toi, et tu colles à lui.',
             'capacities' => [

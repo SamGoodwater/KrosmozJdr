@@ -60,6 +60,19 @@ describe("specializationLevelHtml", () => {
         );
     });
 
+    it("pose une pastille sur un style d’une autre spécialisation", () => {
+        const html = "<h3>Bonta</h3><h3>Meute</h3>";
+        expect(decorateSpecializationStyleHtml(html, "milicien-ne")).toContain(
+            'data-spe-style="bonta"',
+        );
+        expect(decorateSpecializationStyleHtml(html, "sylvain-e")).toContain(
+            'data-spe-style="meute"',
+        );
+        expect(decorateSpecializationStyleHtml(html, "milicien-ne")).not.toContain(
+            'data-spe-style="meute"',
+        );
+    });
+
     it("pose des pastilles spe-style sur les titres Musicien / etc.", () => {
         const html = "<h2>Choix de style</h2><h3>Musicien</h3><p>Blurb</p><h3>Voyant</h3>";
         const out = decorateSpecializationStyleHtml(html, "artiste");

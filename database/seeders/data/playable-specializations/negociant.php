@@ -39,6 +39,29 @@ return [
         'Féca' => 'Logistique, convois, protections de caravane.',
         'Crâ' => 'Messager·ère, contrat de chasse, prime.',
     ],
+    'styles_at' => 3,
+    'styles' => [
+        'comptoir' => [
+            'name' => 'Comptoir',
+            'blurb' => 'L’étal, la balance, le prix du jour. Tu sais ce que la pièce vaut vraiment.',
+            'save' => 'l’Intelligence',
+        ],
+        'caravanier' => [
+            'name' => 'Caravanier',
+            'blurb' => 'La caisse part. Elle arrive. Tu sais si la ville d’après peut payer.',
+            'save' => 'la Vitalité',
+        ],
+        'courtier' => [
+            'name' => 'Courtier',
+            'blurb' => 'Tu ne tiens pas l’étal. Tu trouves qui veut, qui paie, et tu prends la commission.',
+            'save' => 'la Sagesse',
+        ],
+        'marche-gris' => [
+            'name' => 'Marché gris',
+            'blurb' => 'Le nom n’apparaît pas. Le prix non plus. Tu es déjà parti quand on demande qui a vendu.',
+            'save' => 'l’Agilité',
+        ],
+    ],
     'levels' => [
         1 => [
             'choice' => $choices[1],
@@ -75,6 +98,7 @@ return [
             ],
         ],
         3 => [
+            'unlock_style' => true,
             'choice' => $choices[3],
             'flavor' => 'On te reçoit derrière le comptoir. Pas encore dans le bureau.',
             'capacities' => [

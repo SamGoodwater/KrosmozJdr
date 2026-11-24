@@ -39,6 +39,29 @@ return [
         'Enutrof' => 'Chasse au trésor, cartes mouillées, épaves.',
         'Steamer' => 'Navire comme machine, abordage comme formation.',
     ],
+    'styles_at' => 3,
+    'styles' => [
+        'matelot' => [
+            'name' => 'Matelot',
+            'blurb' => 'La corde, la manœuvre, les six bras qui tirent ensemble.',
+            'save' => 'la Force',
+        ],
+        'timonier' => [
+            'name' => 'Timonier',
+            'blurb' => 'La barre, la passe, le ciel. Tu sais si la mer laisse passer.',
+            'save' => 'la Sagesse',
+        ],
+        'corsaire' => [
+            'name' => 'Corsaire',
+            'blurb' => 'L’approche, l’angle mort, le grappin au bon moment.',
+            'save' => 'la Chance',
+        ],
+        'pecheur-euse' => [
+            'name' => 'Pêcheur·euse',
+            'blurb' => 'Le filet, le banc, l’heure où l’on sort. Tu restes sur l’eau toute la journée.',
+            'save' => 'la Vitalité',
+        ],
+    ],
     'levels' => [
         1 => [
             'choice' => $choices[1],
@@ -76,6 +99,7 @@ return [
             ],
         ],
         3 => [
+            'unlock_style' => true,
             'choice' => $choices[3],
             'flavor' => 'Tu nages. Tu lis la houle. L’estomac suit.',
             'capacities' => [

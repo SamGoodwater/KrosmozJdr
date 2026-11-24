@@ -88,6 +88,7 @@ function presentationView(section) {
                 <template #read="{ section: hydrated }">
                     <RichTextReadonlyView
                         v-bind="presentationView(hydrated)"
+                        :specialization-slug="specializationSlug"
                         class="prose prose-invert max-w-none"
                     />
                 </template>

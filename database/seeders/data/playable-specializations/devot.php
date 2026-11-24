@@ -39,6 +39,24 @@ return [
         'Sacrieur' => 'La douleur offerte, la foi qui la lit autrement.',
         'Eliotrope' => 'Portails et pèlerinage : le chemin aussi est un rite.',
     ],
+    'styles_at' => 3,
+    'styles' => [
+        'officiant' => [
+            'name' => 'Officiant',
+            'blurb' => 'Tu lis, tu chantes, tu tiens l’assemblée. Le rite a un ordre.',
+            'save' => 'l’Intelligence',
+        ],
+        'soignant' => [
+            'name' => 'Soignant',
+            'blurb' => 'Tu poses les mains, tu bandes, tu restes quand les autres sortent.',
+            'save' => 'la Vitalité',
+        ],
+        'pelerin' => [
+            'name' => 'Pèlerin',
+            'blurb' => 'Tu marches. Le chemin, l’auberge et le seuil sont déjà une prière.',
+            'save' => 'l’Agilité',
+        ],
+    ],
     'levels' => [
         1 => [
             'choice' => $choices[1],
@@ -77,6 +95,7 @@ return [
             ],
         ],
         3 => [
+            'unlock_style' => true,
             'choice' => $choices[3],
             'flavor' => 'On t’ouvre les portes des hospices. Tu sais déjà où poser le tapis.',
             'capacities' => [

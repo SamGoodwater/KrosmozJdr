@@ -39,6 +39,29 @@ return [
         'Féca' => 'Garde du corps officiel, bouclier diplomatique.',
         'Ecaflip' => 'Paris sociaux, réputation qui bascule en une phrase.',
     ],
+    'styles_at' => 3,
+    'styles' => [
+        'secretaire' => [
+            'name' => 'Secrétaire',
+            'blurb' => 'Le protocole est écrit. Tu sais l’ordre des salutations, et qui ne jamais contredire en public.',
+            'save' => 'l’Intelligence',
+        ],
+        'emissaire' => [
+            'name' => 'Émissaire',
+            'blurb' => 'Tu parles pour quelqu’un. Refuser de t’entendre est déjà une offense.',
+            'save' => 'la Force',
+        ],
+        'favori-te' => [
+            'name' => 'Favori·te',
+            'blurb' => 'Tu te tiens auprès du pouvoir. Tu vois qui ment avant la fin de la phrase.',
+            'save' => 'la Sagesse',
+        ],
+        'espion-ne' => [
+            'name' => 'Espion·ne',
+            'blurb' => 'L’habit est clair, l’oreille est derrière le rideau. Tu es déjà dans le couloir d’à côté.',
+            'save' => 'l’Agilité',
+        ],
+    ],
     'levels' => [
         1 => [
             'choice' => $choices[1],
@@ -74,6 +97,7 @@ return [
             ],
         ],
         3 => [
+            'unlock_style' => true,
             'choice' => $choices[3],
             'flavor' => 'Une rumeur part. Une invitation de rechange te sort d’un huis clos.',
             'capacities' => [
