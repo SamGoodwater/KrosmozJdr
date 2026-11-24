@@ -10,8 +10,6 @@ use App\Support\Entity\EntityStateGate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
-
 class AptitudeBulkController extends Controller
 {
     public function bulkUpdate(Request $request): JsonResponse
@@ -27,23 +25,9 @@ class AptitudeBulkController extends Controller
             'description' => ['sometimes', 'nullable', 'string'],
             'effect' => ['sometimes', 'nullable', 'string'],
             'image' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'reuse_type' => ['sometimes', 'nullable', 'string', Rule::in([
-                Aptitude::REUSE_UNLIMITED,
-                Aptitude::REUSE_SHORT_REST,
-                Aptitude::REUSE_LONG_REST,
-                Aptitude::REUSE_TIMED,
-            ])],
-            'duration_type' => ['sometimes', 'nullable', 'string', Rule::in([
-                Aptitude::DURATION_INSTANT,
-                Aptitude::DURATION_TIMED,
-                Aptitude::DURATION_PERMANENT,
-                Aptitude::DURATION_WHILE_CONDITION,
-            ])],
-            'range_type' => ['sometimes', 'nullable', 'string', Rule::in([
-                Aptitude::RANGE_SELF,
-                Aptitude::RANGE_DISTANCE,
-                Aptitude::RANGE_SENSE,
-            ])],
+            'reuse' => ['sometimes', 'nullable', 'string', 'max:1000'],
+            'duration' => ['sometimes', 'nullable', 'string', 'max:1000'],
+            'range' => ['sometimes', 'nullable', 'string', 'max:1000'],
         ]);
         $validated = AccessLevelMutationGuard::stripUnlessAdmin($request->user(), $validated);
 
@@ -51,7 +35,7 @@ class AptitudeBulkController extends Controller
         $patch = [];
         foreach ([
             'state', 'read_level', 'write_level', 'description', 'effect', 'image',
-            'reuse_type', 'duration_type', 'range_type',
+            'reuse', 'duration', 'range',
         ] as $k) {
             if (array_key_exists($k, $validated)) {
                 $patch[$k] = $validated[$k];

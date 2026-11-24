@@ -11,13 +11,14 @@ import EntityViewTextLink from "@/Pages/Molecules/entity/shared/EntityViewTextLi
 import AptitudeViewMinimal from "./AptitudeViewMinimal.vue";
 
 defineProps({
-  aptitude: { type: Object, required: true },
+  aptitude: { type: Object, default: null },
+  entity: { type: Object, default: null },
 });
 </script>
 
 <template>
   <EntityViewTextLink
-    :entity="aptitude"
+    :entity="aptitude || entity"
     entity-prop="aptitude"
     :minimal-component="AptitudeViewMinimal"
     fallback-icon="fa-solid fa-sparkles"

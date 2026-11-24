@@ -58,7 +58,7 @@ const isStateFilterColumn = (col) => String(col?.filter?.id || "") === "state";
 
 const filterableColumns = () =>
     (Array.isArray(props.columns) ? props.columns : []).filter(
-        (c) => c?.filter?.id && c?.filter?.type && c.filter.type !== "text",
+        (c) => c?.filter?.id && c?.filter?.type,
     );
 
 const stateFilterColumn = () => filterableColumns().find(isStateFilterColumn) || null;
@@ -1295,13 +1295,21 @@ const clearAllActiveFilters = () => {
                     @update:model-value="(v) => handleRangeUpdate(col, v)"
                 />
 
-                <!-- text (legacy, masqué : la recherche globale suffit) -->
-                <div
+                <label
                     v-else-if="col.filter.type === 'text'"
-                    class="text-xs opacity-50"
+                    class="form-control w-full max-w-xs"
                 >
-                    Recherche globale
-                </div>
+                    <span class="label py-1">
+                        <span class="label-text text-xs font-medium">{{ getFilterLabel(col) }}</span>
+                    </span>
+                    <input
+                        type="search"
+                        class="input input-bordered input-sm w-full"
+                        :placeholder="col.filter.placeholder || `Filtrer ${getFilterLabel(col).toLowerCase()}…`"
+                        :value="getRawFilterValue(col.filter.id)"
+                        @input="(e) => updateFilter(col.filter.id, e.target.value || '')"
+                    />
+                </label>
 
                 <!-- unsupported (Phase 1) -->
                 <div v-else class="text-xs opacity-50">

@@ -75,16 +75,6 @@ const levels = computed(() => {
 
 <template>
     <div class="specialization-progression-read space-y-4" aria-label="Progression de spécialisation">
-        <header class="space-y-1">
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-100 m-0">
-                Progression par palier
-            </h3>
-            <p class="text-xs text-base-content/70 m-0">
-                Maîtrises et aptitudes restent dans le texte du palier. Les capacités à choisir
-                sont en vue texte (icône + nom) ; le détail s’ouvre au clic.
-            </p>
-        </header>
-
         <div class="space-y-3">
             <template v-for="row in levels" :key="row.level">
                 <SectionRenderer

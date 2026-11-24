@@ -96,7 +96,7 @@
         "@tiptap/vue-3": "^3.35.0",
         "@vue/devtools-api": "^8.2.1",
         "cally": "^0.9.2",
-        "chart.js": "^4.6.1",
+        "chart.js": "^4.6.2",
         "colord": "^2.14.0",
         "comment-parser": "^1.4.9",
         "dompurify": "^3.5.0",

@@ -43,7 +43,7 @@ class AptitudeTableController extends Controller
 
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['state', 'read_level', 'write_level', 'reuse_type', 'duration_type', 'range_type'] as $k) {
+        foreach (['state', 'read_level', 'write_level', 'reuse', 'duration', 'range'] as $k) {
             if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -66,7 +66,10 @@ class AptitudeTableController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhere('effect', 'like', "%{$search}%");
+                    ->orWhere('effect', 'like', "%{$search}%")
+                    ->orWhere('reuse', 'like', "%{$search}%")
+                    ->orWhere('duration', 'like', "%{$search}%")
+                    ->orWhere('range', 'like', "%{$search}%");
             });
         }
         if ($this->hasFilterValue($filters, 'state')) {
@@ -78,18 +81,17 @@ class AptitudeTableController extends Controller
         if ($this->hasFilterValue($filters, 'write_level')) {
             $this->applyEqualityFilter($query, 'write_level', $filters['write_level'], 'int');
         }
-        if ($this->hasFilterValue($filters, 'reuse_type')) {
-            $this->applyEqualityFilter($query, 'reuse_type', $filters['reuse_type']);
-        }
-        if ($this->hasFilterValue($filters, 'duration_type')) {
-            $this->applyEqualityFilter($query, 'duration_type', $filters['duration_type']);
-        }
-        if ($this->hasFilterValue($filters, 'range_type')) {
-            $this->applyEqualityFilter($query, 'range_type', $filters['range_type']);
+        foreach (['reuse', 'duration', 'range'] as $textField) {
+            if ($this->hasFilterValue($filters, $textField)) {
+                $needle = trim((string) collect($this->normalizeFilterList($filters[$textField]))->first());
+                if ($needle !== '') {
+                    $query->where($textField, 'like', "%{$needle}%");
+                }
+            }
         }
 
         $allowedSort = [
-            'id', 'name', 'reuse_type', 'duration_type', 'range_type',
+            'id', 'name', 'reuse', 'duration', 'range',
             'state', 'read_level', 'write_level', 'created_at', 'updated_at',
         ];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
@@ -107,23 +109,6 @@ class AptitudeTableController extends Controller
             'state' => EntityState::options(),
             'read_level' => self::LEVEL_OPTIONS,
             'write_level' => self::LEVEL_OPTIONS,
-            'reuse_type' => [
-                ['value' => Aptitude::REUSE_UNLIMITED, 'label' => 'Illimité'],
-                ['value' => Aptitude::REUSE_SHORT_REST, 'label' => 'Repos court'],
-                ['value' => Aptitude::REUSE_LONG_REST, 'label' => 'Repos long'],
-                ['value' => Aptitude::REUSE_TIMED, 'label' => 'Temporisé'],
-            ],
-            'duration_type' => [
-                ['value' => Aptitude::DURATION_INSTANT, 'label' => 'Instantané'],
-                ['value' => Aptitude::DURATION_TIMED, 'label' => 'Temporisé'],
-                ['value' => Aptitude::DURATION_PERMANENT, 'label' => 'Permanent'],
-                ['value' => Aptitude::DURATION_WHILE_CONDITION, 'label' => 'Tant que…'],
-            ],
-            'range_type' => [
-                ['value' => Aptitude::RANGE_SELF, 'label' => 'Soi'],
-                ['value' => Aptitude::RANGE_DISTANCE, 'label' => 'Distance'],
-                ['value' => Aptitude::RANGE_SENSE, 'label' => 'Sens'],
-            ],
         ];
 
         if ($format === 'entities') {
@@ -167,31 +152,28 @@ class AptitudeTableController extends Controller
                             'sortValue' => (string) $a->name,
                         ],
                     ],
-                    'reuse_type' => [
-                        'type' => 'badge',
-                        'value' => (string) $a->reuse_type,
+                    'reuse' => [
+                        'type' => 'text',
+                        'value' => (string) ($a->reuse ?: '—'),
                         'params' => [
-                            'color' => 'neutral',
-                            'filterValue' => (string) $a->reuse_type,
-                            'sortValue' => (string) $a->reuse_type,
+                            'searchValue' => (string) ($a->reuse ?? ''),
+                            'sortValue' => (string) ($a->reuse ?? ''),
                         ],
                     ],
-                    'duration_type' => [
-                        'type' => 'badge',
-                        'value' => (string) $a->duration_type,
+                    'duration' => [
+                        'type' => 'text',
+                        'value' => (string) ($a->duration ?: '—'),
                         'params' => [
-                            'color' => 'info',
-                            'filterValue' => (string) $a->duration_type,
-                            'sortValue' => (string) $a->duration_type,
+                            'searchValue' => (string) ($a->duration ?? ''),
+                            'sortValue' => (string) ($a->duration ?? ''),
                         ],
                     ],
-                    'range_type' => [
-                        'type' => 'badge',
-                        'value' => (string) $a->range_type,
+                    'range' => [
+                        'type' => 'text',
+                        'value' => (string) ($a->range ?: '—'),
                         'params' => [
-                            'color' => 'info',
-                            'filterValue' => (string) $a->range_type,
-                            'sortValue' => (string) $a->range_type,
+                            'searchValue' => (string) ($a->range ?? ''),
+                            'sortValue' => (string) ($a->range ?? ''),
                         ],
                     ],
                     'state' => [
@@ -248,18 +230,9 @@ class AptitudeTableController extends Controller
             'name' => $a->name,
             'description' => $a->description,
             'effect' => $a->effect,
-            'reuse_type' => $a->reuse_type,
-            'reuse_amount' => $a->reuse_amount,
-            'reuse_unit' => $a->reuse_unit,
-            'duration_type' => $a->duration_type,
-            'duration_amount' => $a->duration_amount,
-            'duration_unit' => $a->duration_unit,
-            'duration_note' => $a->duration_note,
-            'range_type' => $a->range_type,
-            'range_amount' => $a->range_amount,
-            'range_unit' => $a->range_unit,
-            'range_sense' => $a->range_sense,
-            'range_note' => $a->range_note,
+            'reuse' => $a->reuse,
+            'duration' => $a->duration,
+            'range' => $a->range,
             'state' => (string) ($a->state ?? 'draft'),
             'read_level' => (int) ($a->read_level ?? 0),
             'write_level' => (int) ($a->write_level ?? 0),

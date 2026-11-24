@@ -7,20 +7,23 @@
  */
 import { computed } from "vue";
 import { router } from "@inertiajs/vue3";
-import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
 import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
+import AptitudeIcon from "@/Pages/Molecules/entity/aptitude/AptitudeIcon.vue";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getAptitudeFieldDescriptors } from "@/Entities/aptitude/aptitude-descriptors";
+import { Aptitude } from "@/Models/Entity/Aptitude";
 
 const props = defineProps({
-    aptitude: { type: Object, required: true },
+    aptitude: { type: Object, default: null },
+    /** Fallback si le parent passe `entity` (ex. map modal incomplète). */
+    entity: { type: Object, default: null },
     showActions: { type: Boolean, default: true },
     inModal: { type: Boolean, default: false },
     titleTag: {
@@ -29,6 +32,14 @@ const props = defineProps({
         validator: (v) => ["h1", "h2", "h3"].includes(v),
     },
     tableMeta: { type: Object, default: () => ({}) },
+});
+
+const aptitude = computed(() => {
+    const raw = props.aptitude ?? props.entity;
+    if (!raw) return null;
+    if (raw instanceof Aptitude) return raw;
+    if (typeof raw.toCell === "function") return raw;
+    return new Aptitude(raw._data ?? raw);
 });
 
 const actionsContext = computed(() =>
@@ -62,7 +73,7 @@ const ctx = computed(() => {
         deleteAny: permissions.can("aptitudes", "deleteAny"),
         manageAny: permissions.can("aptitudes", "manageAny"),
     };
-    return { capabilities, meta: { capabilities }, entity: props.aptitude };
+    return { capabilities, meta: { capabilities }, entity: aptitude.value };
 });
 
 const descriptors = computed(() => getAptitudeFieldDescriptors(ctx.value));
@@ -83,12 +94,12 @@ const canShowField = (fieldKey) => {
 };
 
 const mediaSrc = computed(() => {
-    const u = props.aptitude?.image ?? props.aptitude?._data?.image;
+    const u = aptitude.value?.image ?? aptitude.value?._data?.image;
     return u && String(u).trim() ? String(u) : "";
 });
 
 const usageFields = computed(() =>
-    ["reuse_type", "duration_type", "range_type"].filter(canShowField),
+    ["reuse", "duration", "range"].filter(canShowField),
 );
 
 const metaFields = computed(() => ["read_level", "write_level"].filter(canShowField));
@@ -97,8 +108,10 @@ const technicalFields = computed(() =>
     ["created_by", "created_at", "updated_at"].filter(canShowField),
 );
 
-const getCell = (fieldKey) =>
-    props.aptitude.toCell(fieldKey, { size: "lg", context: "extended" });
+const getCell = (fieldKey) => {
+    if (!aptitude.value || typeof aptitude.value.toCell !== "function") return null;
+    return aptitude.value.toCell(fieldKey, { size: "lg", context: "extended" });
+};
 
 const descriptionCell = computed(() => getCell("description"));
 const hasDescription = computed(() => {
@@ -115,17 +128,17 @@ const hasEffect = computed(() => {
 });
 
 const handleAction = async (actionKey) => {
-    const aptitudeId = props.aptitude.id;
+    const aptitudeId = aptitude.value?.id;
     if (!aptitudeId) return;
 
     switch (actionKey) {
         case "view":
             router.visit(route("entities.aptitudes.show", { aptitude: aptitudeId }));
-            emit("view", props.aptitude);
+            emit("view", aptitude.value);
             break;
         case "edit":
             router.visit(route("entities.aptitudes.edit", { aptitude: aptitudeId }));
-            emit("edit", props.aptitude);
+            emit("edit", aptitude.value);
             break;
         case "copy-link": {
             const cfg = getEntityRouteConfig("aptitudes");
@@ -133,26 +146,26 @@ const handleAction = async (actionKey) => {
             if (url) {
                 await copyToClipboard(`${window.location.origin}${url}`, "Lien de l'aptitude copié !");
             }
-            emit("copy-link", props.aptitude);
+            emit("copy-link", aptitude.value);
             break;
         }
         case "download-pdf":
             await downloadPdf(aptitudeId);
-            emit("download-pdf", props.aptitude);
+            emit("download-pdf", aptitude.value);
             break;
         case "refresh":
             router.reload({ only: ["aptitude"] });
-            emit("refresh", props.aptitude);
+            emit("refresh", aptitude.value);
             break;
         case "delete":
-            emit("delete", props.aptitude);
+            emit("delete", aptitude.value);
             break;
     }
 };
 </script>
 
 <template>
-    <div class="space-y-3">
+    <div v-if="aptitude" class="space-y-3">
         <EntityViewHeader :mode="headerMode">
             <template #media>
                 <div class="group relative size-24 shrink-0 sm:size-28 md:size-32">
@@ -165,16 +178,16 @@ const handleAction = async (actionKey) => {
                         :image-props="{
                             size: 'lg',
                             rounded: 'lg',
-                            fit: 'cover',
-                            class: 'w-full h-full',
+                            fit: 'contain',
+                            class: 'w-full h-full bg-transparent',
                         }"
                     />
-                    <div
+                    <AptitudeIcon
                         v-else
-                        class="flex size-full items-center justify-center bg-base-200 entity-radius-box"
-                    >
-                        <Icon source="fa-solid fa-sparkles" :alt="aptitude.name" size="lg" />
-                    </div>
+                        size="lg"
+                        :label="aptitude.name || 'Aptitude'"
+                        :aptitude-id="aptitude.id"
+                    />
                 </div>
             </template>
 

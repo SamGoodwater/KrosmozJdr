@@ -47,9 +47,10 @@ $icons = [
     'capability' => entityIconSvg(
         '<path fill="#f472b6" d="M36 4 16 34h12L24 60l24-32H34z"/>'
     ),
+    // Bouclier (écu) — silhouette distincte du losange (trait), hexagone (état), étoile (sort).
     'aptitude' => entityIconSvg(
-        '<path d="M32 58V36" fill="none" stroke="#86198f" stroke-width="3"/>'
-        .'<path fill="#e879f9" d="M32 38C18 36 12 26 14 16c10 1 15 9 18 18 3-9 8-17 18-18 2 10-4 20-18 22z"/>'
+        '<path fill="#e879f9" d="M32 4 52 10v18c0 12-8 22-20 28C20 50 12 40 12 28V10z"/>'
+        .'<path fill="#fdf4ff" stroke="none" d="M32 18l2.6 7.2H42l-6 4.6 2.3 7.2L32 32.6l-6.3 4.4 2.3-7.2-6-4.6h7.4z"/>'
     ),
     'monster' => entityIconSvg(
         '<path fill="#9f1239" d="M14 30 4 10l14 8z"/>'

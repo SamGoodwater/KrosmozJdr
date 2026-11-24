@@ -80,7 +80,9 @@ const ENTITY_PROP_MAP = {
     "creature-traits": "creature-trait",
     "panoplies": "panoply",
     "capabilities": "capability",
+    "aptitudes": "aptitude",
     "specializations": "specialization",
+    "languages": "language",
     "resource-types": "resourceType",
     "shops": "shop",
 };

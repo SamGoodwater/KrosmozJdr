@@ -3,37 +3,10 @@
  *
  * @example
  * const aptitude = new Aptitude(props.aptitude);
- * console.log(aptitude.reuseType);
+ * console.log(aptitude.reuse);
  */
 import { BaseModel } from '../BaseModel';
 import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
-
-const REUSE_LABELS = {
-    unlimited: 'Illimité',
-    short_rest: 'Repos court',
-    long_rest: 'Repos long',
-    timed: 'Temporisé',
-};
-
-const DURATION_LABELS = {
-    instant: 'Instantané',
-    timed: 'Temporisé',
-    permanent: 'Permanent',
-    while_condition: 'Tant que…',
-};
-
-const RANGE_LABELS = {
-    self: 'Soi',
-    distance: 'Distance',
-    sense: 'Sens',
-};
-
-const SENSE_LABELS = {
-    hearing: 'Ouïe',
-    sight: 'Vue',
-    touch: 'Toucher',
-    custom: 'Personnalisé',
-};
 
 export class Aptitude extends BaseModel {
     get name() {
@@ -48,67 +21,16 @@ export class Aptitude extends BaseModel {
         return this._data.effect || null;
     }
 
-    get reuseType() {
-        return this._data.reuse_type || 'unlimited';
+    get reuse() {
+        return this._data.reuse || '';
     }
 
-    get reuse_type() {
-        return this.reuseType;
+    get duration() {
+        return this._data.duration || '';
     }
 
-    get reuseAmount() {
-        const v = this._data.reuse_amount;
-        return v === null || v === undefined || v === '' ? null : Number(v);
-    }
-
-    get reuseUnit() {
-        return this._data.reuse_unit || null;
-    }
-
-    get durationType() {
-        return this._data.duration_type || 'permanent';
-    }
-
-    get duration_type() {
-        return this.durationType;
-    }
-
-    get durationAmount() {
-        const v = this._data.duration_amount;
-        return v === null || v === undefined || v === '' ? null : Number(v);
-    }
-
-    get durationUnit() {
-        return this._data.duration_unit || null;
-    }
-
-    get durationNote() {
-        return this._data.duration_note || null;
-    }
-
-    get rangeType() {
-        return this._data.range_type || 'self';
-    }
-
-    get range_type() {
-        return this.rangeType;
-    }
-
-    get rangeAmount() {
-        const v = this._data.range_amount;
-        return v === null || v === undefined || v === '' ? null : Number(v);
-    }
-
-    get rangeUnit() {
-        return this._data.range_unit || null;
-    }
-
-    get rangeSense() {
-        return this._data.range_sense || null;
-    }
-
-    get rangeNote() {
-        return this._data.range_note || null;
+    get range() {
+        return this._data.range || '';
     }
 
     get image() {
@@ -121,34 +43,6 @@ export class Aptitude extends BaseModel {
 
     get specializations() {
         return this._data.specializations || [];
-    }
-
-    get reuseLabel() {
-        if (this.reuseType === 'timed' && this.reuseAmount && this.reuseUnit) {
-            return `${this.reuseAmount} ${this.reuseUnit}`;
-        }
-        return REUSE_LABELS[this.reuseType] || this.reuseType;
-    }
-
-    get durationLabel() {
-        if (this.durationType === 'timed' && this.durationAmount && this.durationUnit) {
-            return `${this.durationAmount} ${this.durationUnit}`;
-        }
-        if (this.durationType === 'while_condition' && this.durationNote) {
-            return this.durationNote;
-        }
-        return DURATION_LABELS[this.durationType] || this.durationType;
-    }
-
-    get rangeLabel() {
-        if (this.rangeType === 'distance' && this.rangeAmount) {
-            return `${this.rangeAmount} ${this.rangeUnit || 'm'}`;
-        }
-        if (this.rangeType === 'sense') {
-            const sense = SENSE_LABELS[this.rangeSense] || this.rangeSense || 'Sens';
-            return this.rangeNote ? `${sense} (${this.rangeNote})` : sense;
-        }
-        return RANGE_LABELS[this.rangeType] || this.rangeType;
     }
 
     toCell(fieldKey, options = {}) {
@@ -164,37 +58,10 @@ export class Aptitude extends BaseModel {
                 return this._toNameCell(format, size, options);
             case 'description':
             case 'effect':
+            case 'reuse':
+            case 'duration':
+            case 'range':
                 return this._toTextCell(fieldKey, format, size);
-            case 'reuse_type':
-                return {
-                    type: 'badge',
-                    value: this.reuseLabel,
-                    params: {
-                        filterValue: this.reuseType,
-                        sortValue: this.reuseType,
-                        searchValue: this.reuseLabel,
-                    },
-                };
-            case 'duration_type':
-                return {
-                    type: 'badge',
-                    value: this.durationLabel,
-                    params: {
-                        filterValue: this.durationType,
-                        sortValue: this.durationType,
-                        searchValue: this.durationLabel,
-                    },
-                };
-            case 'range_type':
-                return {
-                    type: 'badge',
-                    value: this.rangeLabel,
-                    params: {
-                        filterValue: this.rangeType,
-                        sortValue: this.rangeType,
-                        searchValue: this.rangeLabel,
-                    },
-                };
             default:
                 return baseCell;
         }
@@ -235,18 +102,9 @@ export class Aptitude extends BaseModel {
             name: this.name,
             description: this.description,
             effect: this.effect,
-            reuse_type: this.reuseType,
-            reuse_amount: this.reuseAmount,
-            reuse_unit: this.reuseUnit,
-            duration_type: this.durationType,
-            duration_amount: this.durationAmount,
-            duration_unit: this.durationUnit,
-            duration_note: this.durationNote,
-            range_type: this.rangeType,
-            range_amount: this.rangeAmount,
-            range_unit: this.rangeUnit,
-            range_sense: this.rangeSense,
-            range_note: this.rangeNote,
+            reuse: this.reuse,
+            duration: this.duration,
+            range: this.range,
             state: this.state,
             read_level: this.readLevel,
             write_level: this.writeLevel,

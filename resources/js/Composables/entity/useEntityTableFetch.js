@@ -20,6 +20,7 @@ export const ENTITY_VIEW_PROP_BY_TYPE = Object.freeze({
     breeds: "breed",
     panoplies: "panoply",
     capabilities: "capability",
+    aptitudes: "aptitude",
     npcs: "npc",
     conditions: "condition",
     shops: "shop",

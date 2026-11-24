@@ -26,6 +26,7 @@ describe("specializationLevelHtml", () => {
         expect(narrativeHtml).toContain("Maîtrises");
         expect(narrativeHtml).toContain("spe-masteries-list");
         expect(narrativeHtml).toContain("Outils");
+        expect(narrativeHtml).not.toMatch(/Outils<\/strong>\s*:/);
         expect(narrativeHtml).toContain("Aptitudes");
         expect(narrativeHtml).not.toContain("Capacités — choisis-en");
         expect(narrativeHtml).not.toContain("Applaudissement");
@@ -65,6 +66,24 @@ describe("specializationLevelHtml", () => {
         expect(out).toContain('data-spe-style="musicien"');
         expect(out).toContain('data-spe-style="voyant"');
         expect(out).toContain("spe-style");
+    });
+
+    it("retire le récap, les maîtrises vides et le rituel oui/non", () => {
+        const html =
+            "<p><strong>À ce niveau</strong> : 2 compétences.</p>" +
+            "<h2>Maîtrises</h2><ul>" +
+            "<li><strong>Outils</strong> : Un accessoire.</li>" +
+            "<li><strong>Langues</strong> : Aucune.</li>" +
+            "</ul>" +
+            "<p><strong>2ᵉ sauvegarde</strong> : Sagesse.</p>" +
+            "<p><strong>Rituel</strong> : oui (à partir du niveau 6).</p>";
+        const { narrativeHtml } = prepareSpecializationLevelHtml(html);
+        expect(narrativeHtml).not.toContain("À ce niveau");
+        expect(narrativeHtml).not.toContain("Langues");
+        expect(narrativeHtml).not.toContain("Rituel");
+        expect(narrativeHtml).toContain("Tu maîtrises les jets de sauvegarde liés à Sagesse.");
+        expect(narrativeHtml).toContain("Un accessoire.");
+        expect(narrativeHtml).not.toMatch(/Outils<\/strong>\s*:/);
     });
 
     it("lit le palier depuis pivot.level", () => {

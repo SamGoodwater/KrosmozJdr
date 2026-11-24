@@ -14,23 +14,10 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->text('effect')->nullable();
 
-            // Réutilisation
-            $table->string('reuse_type', 32)->default('unlimited');
-            $table->unsignedInteger('reuse_amount')->nullable();
-            $table->string('reuse_unit', 16)->nullable();
-
-            // Durée d'effet
-            $table->string('duration_type', 32)->default('permanent');
-            $table->unsignedInteger('duration_amount')->nullable();
-            $table->string('duration_unit', 16)->nullable();
-            $table->string('duration_note')->nullable();
-
-            // Portée
-            $table->string('range_type', 32)->default('self');
-            $table->unsignedInteger('range_amount')->nullable();
-            $table->string('range_unit', 8)->nullable();
-            $table->string('range_sense', 32)->nullable();
-            $table->string('range_note')->nullable();
+            // Phrases libres (réutilisation, durée, portée)
+            $table->text('reuse')->nullable();
+            $table->text('duration')->nullable();
+            $table->text('range')->nullable();
 
             $table->string('state')->default('draft');
             $table->tinyInteger('read_level')->default(0);
@@ -42,9 +29,6 @@ return new class extends Migration
 
             $table->index('name');
             $table->index('state');
-            $table->index('reuse_type');
-            $table->index('duration_type');
-            $table->index('range_type');
         });
 
         Schema::create('aptitude_specialization', function (Blueprint $table) {

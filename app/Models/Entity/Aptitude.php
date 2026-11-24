@@ -23,18 +23,9 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string $name
  * @property string|null $description
  * @property string|null $effect
- * @property string $reuse_type
- * @property int|null $reuse_amount
- * @property string|null $reuse_unit
- * @property string $duration_type
- * @property int|null $duration_amount
- * @property string|null $duration_unit
- * @property string|null $duration_note
- * @property string $range_type
- * @property int|null $range_amount
- * @property string|null $range_unit
- * @property string|null $range_sense
- * @property string|null $range_note
+ * @property string|null $reuse
+ * @property string|null $duration
+ * @property string|null $range
  * @property string $state
  * @property int $read_level
  * @property int $write_level
@@ -46,10 +37,31 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read User|null $createdBy
  * @property-read Collection<int, Specialization> $specializations
  * @property-read MediaCollection<int, Media> $media
- *
  * @method static \Database\Factories\Entity\AptitudeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude visibleToUser(?\App\Models\User $user)
- *
+ * @property-read int|null $media_count
+ * @property-read int|null $specializations_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude whereDuration($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude whereEffect($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude whereImage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude whereRange($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude whereReadLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude whereReuse($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude whereWriteLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aptitude withoutTrashed()
  * @mixin \Eloquent
  */
 class Aptitude extends Model implements HasMedia
@@ -67,28 +79,6 @@ class Aptitude extends Model implements HasMedia
 
     public const STATE_ARCHIVED = 'archived';
 
-    public const REUSE_UNLIMITED = 'unlimited';
-
-    public const REUSE_SHORT_REST = 'short_rest';
-
-    public const REUSE_LONG_REST = 'long_rest';
-
-    public const REUSE_TIMED = 'timed';
-
-    public const DURATION_INSTANT = 'instant';
-
-    public const DURATION_TIMED = 'timed';
-
-    public const DURATION_PERMANENT = 'permanent';
-
-    public const DURATION_WHILE_CONDITION = 'while_condition';
-
-    public const RANGE_SELF = 'self';
-
-    public const RANGE_DISTANCE = 'distance';
-
-    public const RANGE_SENSE = 'sense';
-
     public const MEDIA_PATH = 'images/entity/aptitudes';
 
     public const MEDIA_FILE_PATTERN_IMAGES = 'image-[id]-[name]';
@@ -97,18 +87,9 @@ class Aptitude extends Model implements HasMedia
         'name',
         'description',
         'effect',
-        'reuse_type',
-        'reuse_amount',
-        'reuse_unit',
-        'duration_type',
-        'duration_amount',
-        'duration_unit',
-        'duration_note',
-        'range_type',
-        'range_amount',
-        'range_unit',
-        'range_sense',
-        'range_note',
+        'reuse',
+        'duration',
+        'range',
         'state',
         'read_level',
         'write_level',
@@ -117,9 +98,6 @@ class Aptitude extends Model implements HasMedia
     ];
 
     protected $casts = [
-        'reuse_amount' => 'integer',
-        'duration_amount' => 'integer',
-        'range_amount' => 'integer',
         'read_level' => 'integer',
         'write_level' => 'integer',
     ];

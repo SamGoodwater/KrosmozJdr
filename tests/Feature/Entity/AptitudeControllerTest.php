@@ -51,28 +51,26 @@ class AptitudeControllerTest extends TestCase
             ->post(route('entities.aptitudes.store'), [
                 'name' => 'Nouvelle aptitude',
                 'effect' => 'Un bonus naturel',
-                'reuse_type' => Aptitude::REUSE_SHORT_REST,
-                'duration_type' => Aptitude::DURATION_WHILE_CONDITION,
-                'duration_note' => 'Tant qu’il y a une foule',
-                'range_type' => Aptitude::RANGE_SENSE,
-                'range_sense' => 'hearing',
+                'reuse' => 'Après un repos court',
+                'duration' => 'Tant qu’il y a une foule',
+                'range' => 'À portée d’ouïe',
                 'state' => Aptitude::STATE_DRAFT,
             ])
             ->assertRedirect();
 
         $aptitude = Aptitude::query()->where('name', 'Nouvelle aptitude')->first();
         $this->assertNotNull($aptitude);
-        $this->assertSame(Aptitude::REUSE_SHORT_REST, $aptitude->reuse_type);
+        $this->assertSame('Après un repos court', $aptitude->reuse);
 
         $this->actingAs($admin)
             ->patch(route('entities.aptitudes.update', $aptitude), [
                 'name' => 'Aptitude renommée',
-                'reuse_type' => Aptitude::REUSE_LONG_REST,
+                'reuse' => 'Après un repos long',
             ])
             ->assertRedirect();
 
         $this->assertSame('Aptitude renommée', $aptitude->fresh()->name);
-        $this->assertSame(Aptitude::REUSE_LONG_REST, $aptitude->fresh()->reuse_type);
+        $this->assertSame('Après un repos long', $aptitude->fresh()->reuse);
     }
 
     public function test_table_api_returns_aptitude_rows(): void

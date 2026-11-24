@@ -1,5 +1,17 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Fiche de création des spécialisations
+
+La grille pour écrire une spécialisation tient sur un **budget de points** (23 sur la carrière), le même pour tout le monde. Au niveau 3 on choisit un style (3 à 5), et c’est lui qui donne la deuxième sauvegarde. L’expertise, forte, commence au niveau 9 et n’est pas offerte à toutes les spés. Les outils du niveau 1 laissent de la marge au voleur et à l’artisan ; ailleurs ils pèsent peu. L’Artiste sert d’exemple (quatre styles). Les règles joueur n’ont pas encore bougé.
+
+## Novembre 2026 — Aptitudes : icônes distinctes et forme en écu
+
+Chaque aptitude a son propre pictogramme (thématique), posé sur un **fond en bouclier** pour la distinguer d’un sort (étoile), d’un trait (losange) ou d’un état (hexagone). L’icône de type dans le menu suit la même silhouette.
+
+## Novembre 2026 — Aptitudes : phrases libres pour usage
+
+Réutilisation, durée et portée d’une aptitude sont des **phrases libres** (plus de listes de mots-clés). Les filtres du tableau sont des champs texte ; la recherche globale les couvre aussi.
+
 ## Novembre 2026 — Aptitudes et langues dans le menu Bibliothèques
 
 Les entrées **Aptitudes** et **Langues** apparaissent dans le menu Bibliothèques (pages CMS + tableau). Les langues restent éditables côté admin MJ ; en lecture, tout le monde peut les consulter comme les autres catalogues.
@@ -10,7 +22,7 @@ Les **aptitudes de spécialisation** ont leur propre fiche (réutilisation, dur�
 
 ## Novembre 2026 — Équipements brouillon, premier passage
 
-Les fiches d’équipement qui ne portaient qu’une note interne (« trou de grille ») ont une phrase claire : les bonus sont là, la description reste à relire. Les premiers objets de niveau 1, de l’Aileron de Skale à la Boufballe, sont passés au « tu ». Le reste du brouillon suit.
+Les fiches d’équipement qui ne portaient qu’une note interne (« trou de grille ») ont une phrase claire : les bonus sont là, la description reste à relire. Les objets de niveau 1, hors apparat et personnages suiveurs, sont passés au « tu ». Le reste du brouillon suit.
 
 ## Novembre 2026 — Ressources jouables, au « tu »
 

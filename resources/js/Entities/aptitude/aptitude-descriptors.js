@@ -7,50 +7,20 @@
 
 import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/SharedConstants";
 
-const REUSE_OPTIONS = [
-  { value: "unlimited", label: "Illimité" },
-  { value: "short_rest", label: "Repos court" },
-  { value: "long_rest", label: "Repos long" },
-  { value: "timed", label: "Temporisé" },
-];
-
-const DURATION_OPTIONS = [
-  { value: "instant", label: "Instantané" },
-  { value: "timed", label: "Temporisé" },
-  { value: "permanent", label: "Permanent" },
-  { value: "while_condition", label: "Tant que…" },
-];
-
-const RANGE_OPTIONS = [
-  { value: "self", label: "Soi" },
-  { value: "distance", label: "Distance" },
-  { value: "sense", label: "Sens" },
-];
-
-const TIME_UNIT_OPTIONS = [
-  { value: "minute", label: "Minute(s)" },
-  { value: "hour", label: "Heure(s)" },
-  { value: "day", label: "Jour(s)" },
-];
-
-const DISTANCE_UNIT_OPTIONS = [
-  { value: "m", label: "m" },
-  { value: "km", label: "km" },
-];
-
-const SENSE_OPTIONS = [
-  { value: "hearing", label: "Ouïe" },
-  { value: "sight", label: "Vue" },
-  { value: "touch", label: "Toucher" },
-  { value: "custom", label: "Personnalisé" },
-];
-
 const badgeSizes = {
   xs: { mode: "badge" },
   sm: { mode: "badge" },
   md: { mode: "badge" },
   lg: { mode: "badge" },
   xl: { mode: "badge" },
+};
+
+const phraseTextSizes = {
+  xs: { mode: "text", truncate: 18 },
+  sm: { mode: "text", truncate: 24 },
+  md: { mode: "text", truncate: 40 },
+  lg: { mode: "text", truncate: 60 },
+  xl: { mode: "text" },
 };
 
 /**
@@ -60,13 +30,6 @@ const badgeSizes = {
 export function getAptitudeFieldDescriptors(ctx = {}) {
   const can = ctx?.capabilities || ctx?.meta?.capabilities || null;
   const canUpdateAny = Boolean(can?.updateAny);
-
-  const entityValue = (context, key) =>
-    context?.entity?.[key] ??
-    context?.entity?._data?.[key] ??
-    context?.form?.[key] ??
-    context?.model?.[key] ??
-    null;
 
   return {
     id: {
@@ -167,205 +130,69 @@ export function getAptitudeFieldDescriptors(ctx = {}) {
       },
       edit: { form: { type: "textarea", required: false, showInCompact: true, bulk: { enabled: true, nullable: true } } },
     },
-    reuse_type: {
-      key: "reuse_type",
+    reuse: {
+      key: "reuse",
       label: "Réutilisation",
       icon: "fa-solid fa-rotate",
       table: {
         sortable: true,
-        filterable: { id: "reuse_type", type: "multi", defaultVisible: true, options: REUSE_OPTIONS },
+        searchable: true,
+        filterable: { id: "reuse", type: "text", defaultVisible: true, placeholder: "Ex. repos court…" },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
-        cell: { sizes: badgeSizes },
+        cell: { sizes: phraseTextSizes },
       },
-      display: { sizes: badgeSizes },
+      display: { sizes: phraseTextSizes },
       edit: {
         form: {
-          type: "select",
-          required: true,
-          showInCompact: true,
-          options: REUSE_OPTIONS,
-          defaultValue: "unlimited",
-          bulk: { enabled: true, nullable: false },
-        },
-      },
-    },
-    reuse_amount: {
-      key: "reuse_amount",
-      label: "Délai (quantité)",
-      icon: "fa-solid fa-hashtag",
-      visibleIf: (context = ctx) => entityValue(context, "reuse_type") === "timed",
-      edit: {
-        form: {
-          type: "number",
+          type: "textarea",
           required: false,
           showInCompact: true,
-          validation: { min: 1 },
-          bulk: { enabled: false },
+          help: "Phrase libre, ex. « Après un repos court » ou « 1 fois par scène tant que… ».",
+          bulk: { enabled: true, nullable: true },
         },
       },
     },
-    reuse_unit: {
-      key: "reuse_unit",
-      label: "Délai (unité)",
-      icon: "fa-solid fa-clock",
-      visibleIf: (context = ctx) => entityValue(context, "reuse_type") === "timed",
-      edit: {
-        form: {
-          type: "select",
-          required: false,
-          showInCompact: true,
-          options: TIME_UNIT_OPTIONS,
-          bulk: { enabled: false },
-        },
-      },
-    },
-    duration_type: {
-      key: "duration_type",
+    duration: {
+      key: "duration",
       label: "Durée",
       icon: "fa-solid fa-hourglass-half",
       table: {
         sortable: true,
-        filterable: { id: "duration_type", type: "multi", defaultVisible: true, options: DURATION_OPTIONS },
+        searchable: true,
+        filterable: { id: "duration", type: "text", defaultVisible: true, placeholder: "Ex. tant qu’il y a…" },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
-        cell: { sizes: badgeSizes },
+        cell: { sizes: phraseTextSizes },
       },
-      display: { sizes: badgeSizes },
+      display: { sizes: phraseTextSizes },
       edit: {
         form: {
-          type: "select",
-          required: true,
-          showInCompact: true,
-          options: DURATION_OPTIONS,
-          defaultValue: "permanent",
-          bulk: { enabled: true, nullable: false },
-        },
-      },
-    },
-    duration_amount: {
-      key: "duration_amount",
-      label: "Durée (quantité)",
-      icon: "fa-solid fa-hashtag",
-      visibleIf: (context = ctx) => entityValue(context, "duration_type") === "timed",
-      edit: {
-        form: {
-          type: "number",
+          type: "textarea",
           required: false,
           showInCompact: true,
-          validation: { min: 1 },
-          bulk: { enabled: false },
+          help: "Phrase libre, ex. « Permanente », « 1 minute » ou « Tant qu’il y a une foule ».",
+          bulk: { enabled: true, nullable: true },
         },
       },
     },
-    duration_unit: {
-      key: "duration_unit",
-      label: "Durée (unité)",
-      icon: "fa-solid fa-clock",
-      visibleIf: (context = ctx) => entityValue(context, "duration_type") === "timed",
-      edit: {
-        form: {
-          type: "select",
-          required: false,
-          showInCompact: true,
-          options: TIME_UNIT_OPTIONS,
-          bulk: { enabled: false },
-        },
-      },
-    },
-    duration_note: {
-      key: "duration_note",
-      label: "Condition de durée",
-      icon: "fa-solid fa-comment",
-      visibleIf: (context = ctx) => entityValue(context, "duration_type") === "while_condition",
-      edit: {
-        form: {
-          type: "text",
-          required: false,
-          showInCompact: true,
-          help: "Ex. « tant qu’il y a une foule »",
-          bulk: { enabled: false },
-        },
-      },
-    },
-    range_type: {
-      key: "range_type",
+    range: {
+      key: "range",
       label: "Portée",
       icon: "fa-solid fa-bullseye",
       table: {
         sortable: true,
-        filterable: { id: "range_type", type: "multi", defaultVisible: true, options: RANGE_OPTIONS },
+        searchable: true,
+        filterable: { id: "range", type: "text", defaultVisible: true, placeholder: "Ex. à portée d’ouïe…" },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
-        cell: { sizes: badgeSizes },
+        cell: { sizes: phraseTextSizes },
       },
-      display: { sizes: badgeSizes },
+      display: { sizes: phraseTextSizes },
       edit: {
         form: {
-          type: "select",
-          required: true,
-          showInCompact: true,
-          options: RANGE_OPTIONS,
-          defaultValue: "self",
-          bulk: { enabled: true, nullable: false },
-        },
-      },
-    },
-    range_amount: {
-      key: "range_amount",
-      label: "Distance",
-      icon: "fa-solid fa-ruler",
-      visibleIf: (context = ctx) => entityValue(context, "range_type") === "distance",
-      edit: {
-        form: {
-          type: "number",
+          type: "textarea",
           required: false,
           showInCompact: true,
-          validation: { min: 1 },
-          bulk: { enabled: false },
-        },
-      },
-    },
-    range_unit: {
-      key: "range_unit",
-      label: "Unité de distance",
-      icon: "fa-solid fa-ruler-horizontal",
-      visibleIf: (context = ctx) => entityValue(context, "range_type") === "distance",
-      edit: {
-        form: {
-          type: "select",
-          required: false,
-          showInCompact: true,
-          options: DISTANCE_UNIT_OPTIONS,
-          defaultValue: "m",
-          bulk: { enabled: false },
-        },
-      },
-    },
-    range_sense: {
-      key: "range_sense",
-      label: "Sens",
-      icon: "fa-solid fa-ear-listen",
-      visibleIf: (context = ctx) => entityValue(context, "range_type") === "sense",
-      edit: {
-        form: {
-          type: "select",
-          required: false,
-          showInCompact: true,
-          options: SENSE_OPTIONS,
-          bulk: { enabled: false },
-        },
-      },
-    },
-    range_note: {
-      key: "range_note",
-      label: "Note de portée",
-      icon: "fa-solid fa-comment",
-      visibleIf: (context = ctx) => entityValue(context, "range_type") === "sense",
-      edit: {
-        form: {
-          type: "text",
-          required: false,
-          showInCompact: true,
-          help: "Ex. « tant qu’on t’entend »",
-          bulk: { enabled: false },
+          help: "Phrase libre, ex. « Soi », « 9 m » ou « Créatures qui t’entendent ».",
+          bulk: { enabled: true, nullable: true },
         },
       },
     },

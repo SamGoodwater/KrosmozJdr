@@ -230,17 +230,11 @@ final class DraftSpecializationContentRenderer
             }
             $save = trim((string) ($style['save'] ?? ''));
             if ($save !== '') {
-                $blocks[] = '<p><strong>2ᵉ sauvegarde</strong> : '.$this->richText($save).'.</p>';
+                $blocks[] = '<p>Tu maîtrises les jets de sauvegarde liés à '.$this->richText($save).'.</p>';
             }
             $applause = trim((string) ($style['applaudissement'] ?? ''));
             if ($applause !== '') {
-                $blocks[] = '<p><strong>Avec Applaudissement</strong> : '.$this->richText($applause).'</p>';
-            }
-            $ritual = $style['ritual'] ?? null;
-            if ($ritual === true) {
-                $blocks[] = '<p><strong>Rituel</strong> : oui (à partir du niveau 6).</p>';
-            } elseif ($ritual === false) {
-                $blocks[] = '<p><strong>Rituel</strong> : non.</p>';
+                $blocks[] = '<p>'.$this->richText($applause).'</p>';
             }
         }
 
@@ -284,7 +278,7 @@ final class DraftSpecializationContentRenderer
         }
 
         $gains = trim((string) ($levelData['gains'] ?? ''));
-        if ($gains !== '') {
+        if ($gains !== '' && ! $this->envelope) {
             $parts[] = '<p><strong>À ce niveau</strong> : '.$this->richText($gains).'</p>';
         } elseif (! $this->envelope) {
             $choice = $this->buildChoiceLine($level, $levelData);
@@ -304,9 +298,14 @@ final class DraftSpecializationContentRenderer
         if (is_array($masteries) && $masteries !== []) {
             $items = '';
             foreach ($masteries as $label => $text) {
+                if ($this->isEmptyMastery((string) $text)) {
+                    continue;
+                }
                 $items .= $this->li((string) $label, (string) $text);
             }
-            $parts[] = '<h2>Maîtrises</h2><ul>'.$items.'</ul>';
+            if ($items !== '') {
+                $parts[] = '<h2>Maîtrises</h2><ul>'.$items.'</ul>';
+            }
         }
 
         $ritual = trim((string) ($levelData['ritual'] ?? ''));
@@ -595,6 +594,16 @@ final class DraftSpecializationContentRenderer
             return '<li>'.e($label).'</li>';
         }
 
-        return '<li><strong>'.e($label).'</strong> : '.$this->richText($text).'</li>';
+        return '<li><strong>'.e($label).'</strong> '.$this->richText($text).'</li>';
+    }
+
+    /**
+     * Une ligne « Aucune » ou « Aucun pour l’instant » ne s’affiche pas.
+     */
+    private function isEmptyMastery(string $text): bool
+    {
+        $text = trim($text);
+
+        return $text === '' || preg_match('/^(aucune?s?|aucun(?: pour l[’\']instant)?)\.?$/iu', $text) === 1;
     }
 }

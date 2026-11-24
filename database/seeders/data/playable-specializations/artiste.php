@@ -3,9 +3,10 @@
 declare(strict_types=1);
 
 /**
- * Artiste — enveloppe 2.4.6 (essai).
+ * Artiste — essai d'avant le barème de points.
  *
- * Socle commun au niveau 1, style au niveau 3, tableau de progression en tête.
+ * La fiche de création (private/game/rules/.../2.4.6) a un budget par palier.
+ * Ce seed suit encore l'enveloppe précédente : à recaler après validation du barème.
  * Ton : docs/IA/TON.md.
  *
  * @return array<string, mixed>

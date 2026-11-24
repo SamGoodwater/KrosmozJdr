@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Les entrées **Aptitudes** et **Langues** apparaissent dans le menu Bibliothèques (pages CMS + tableau). Les langues restent éditables côté admin MJ ; en lecture, tout le monde peut les consulter comme les autres catalogues."
+    "description": "Réutilisation, durée et portée d’une aptitude sont des **phrases libres** (plus de listes de mots-clés). Les filtres du tableau sont des champs texte ; la recherche globale les couvre aussi."
   },
   {
     "path": "backend/_ai.md",

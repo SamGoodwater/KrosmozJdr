@@ -15,21 +15,8 @@ export const APTITUDE_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'usage',
         title: 'Réutilisation, durée & portée',
-        subtitle: 'Conditions d’activation naturelles (sans PA).',
-        fieldKeys: [
-            'reuse_type',
-            'reuse_amount',
-            'reuse_unit',
-            'duration_type',
-            'duration_amount',
-            'duration_unit',
-            'duration_note',
-            'range_type',
-            'range_amount',
-            'range_unit',
-            'range_sense',
-            'range_note',
-        ],
+        subtitle: 'Phrases libres décrivant l’usage naturel (sans PA).',
+        fieldKeys: ['reuse', 'duration', 'range'],
     },
     {
         id: 'admin',

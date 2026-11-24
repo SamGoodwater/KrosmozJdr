@@ -52,18 +52,9 @@ erDiagram
     name : varchar(255)
     description : text
     effect : text
-    reuse_type : varchar(32)
-    reuse_amount : int(10) unsigned
-    reuse_unit : varchar(16)
-    duration_type : varchar(32)
-    duration_amount : int(10) unsigned
-    duration_unit : varchar(16)
-    duration_note : varchar(255)
-    range_type : varchar(32)
-    range_amount : int(10) unsigned
-    range_unit : varchar(8)
-    range_sense : varchar(32)
-    range_note : varchar(255)
+    reuse : text
+    duration : text
+    range : text
     state : varchar(255)
     read_level : tinyint(4)
     write_level : tinyint(4)

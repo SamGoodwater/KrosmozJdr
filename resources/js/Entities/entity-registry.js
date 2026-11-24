@@ -220,7 +220,7 @@ export function getEntityConfig(entityType) {
         model: Aptitude,
         getDescriptors: getAptitudeFieldDescriptors,
         responseAdapter: createEntityAdapter(Aptitude),
-        defaults: { minimalImportantFields: ["name", "reuse_type", "duration_type", "range_type"] },
+        defaults: { minimalImportantFields: ["name", "reuse", "duration", "range"] },
       };
     case "specializations":
       return {

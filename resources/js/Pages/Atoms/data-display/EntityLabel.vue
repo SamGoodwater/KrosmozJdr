@@ -26,8 +26,17 @@ import { getCommonProps, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 import { getEntityConfig, getEntityIconUrl } from '@/config/entities';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 
-/** Polygon personnalisé pour le fond de l'icône. */
-const ICON_BG_POLYGON = 'polygon(91% 72%, 96% 61%, 100% 40%, 95% 25%, 100% 9%, 80% 3%, 54% 0, 1% 6%, 6% 16%, 0 30%, 13% 43%, 8% 59%, 1% 75%, 13% 85%, 5% 100%, 54% 95%, 75% 93%, 91% 100%, 100% 85%);';
+/** Fond organique par défaut (types sans silhouette dédiée). */
+const ICON_BG_POLYGON_DEFAULT =
+  'polygon(91% 72%, 96% 61%, 100% 40%, 95% 25%, 100% 9%, 80% 3%, 54% 0, 1% 6%, 6% 16%, 0 30%, 13% 43%, 8% 59%, 1% 75%, 13% 85%, 5% 100%, 54% 95%, 75% 93%, 91% 100%, 100% 85%)';
+
+/**
+ * Silhouettes de fond pour renforcer le webp (aptitude = écu).
+ * Les autres types gardent le polygone organique : leur webp porte déjà la forme.
+ */
+const ENTITY_CLIP_PATH = {
+  aptitude: 'polygon(50% 0%, 92% 12%, 96% 55%, 50% 100%, 4% 55%, 8% 12%)',
+};
 
 /**
  * Mapping explicite entity → variable CSS pour le fond (teinte 200).
@@ -125,7 +134,7 @@ const textVar = computed(() => ENTITY_TEXT_VAR[entityKey.value] ?? 'var(--color-
 /** Style inline pour le bloc icône (fond + clip-path) — pas de classe dynamique. */
 const iconWrapStyle = computed(() => ({
   backgroundColor: bgVar.value,
-  clipPath: ICON_BG_POLYGON,
+  clipPath: ENTITY_CLIP_PATH[entityKey.value] ?? ICON_BG_POLYGON_DEFAULT,
 }));
 
 /**
@@ -255,10 +264,9 @@ const iconWrapClasses = computed(() =>
 </template>
 
 <style scoped>
-/* Bloc icône : le polygon est appliqué ici */
+/* clip-path : défini en inline (ENTITY_CLIP_PATH) pour varier par type d’entité */
 .entity-label-icon-wrap {
-  -webkit-clip-path: polygon(91% 72%, 96% 61%, 100% 40%, 95% 25%, 100% 9%, 80% 3%, 54% 0, 1% 6%, 6% 16%, 0 30%, 13% 43%, 8% 59%, 1% 75%, 13% 85%, 5% 100%, 54% 95%, 75% 93%, 91% 100%, 100% 85%);;
-  clip-path: polygon(91% 72%, 96% 61%, 100% 40%, 95% 25%, 100% 9%, 80% 3%, 54% 0, 1% 6%, 6% 16%, 0 30%, 13% 43%, 8% 59%, 1% 75%, 13% 85%, 5% 100%, 54% 95%, 75% 93%, 91% 100%, 100% 85%);;
+  overflow: hidden;
 }
 
 .entity-label-img {

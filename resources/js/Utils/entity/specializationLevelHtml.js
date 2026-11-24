@@ -246,6 +246,7 @@ export function prepareSpecializationLevelHtml(html, options = {}) {
     });
 
     decorateSpecializationStyleHeadings(root, specializationSlug);
+    tidySpecializationNarrative(root);
 
     return {
         narrativeHtml: root.innerHTML.trim(),
@@ -256,6 +257,76 @@ export function prepareSpecializationLevelHtml(html, options = {}) {
         ),
         styleVariants,
     };
+}
+
+/**
+ * Allège le HTML déjà seedé : pas de récap « À ce niveau », pas de « : » sous le titre
+ * d’une maîtrise, pas de ligne vide (Aucune), pas de « Rituel : oui/non » sur un style.
+ * La 2ᵉ sauvegarde devient une phrase.
+ *
+ * @param {HTMLElement} root
+ */
+function tidySpecializationNarrative(root) {
+    root.querySelectorAll("p").forEach((p) => {
+        const strong = p.querySelector(":scope > strong");
+        const label = String(strong?.textContent || "").trim();
+        const whole = String(p.textContent || "").trim();
+        if (/^À ce (niveau|palier)\b/i.test(whole) || /^À ce (niveau|palier)$/i.test(label)) {
+            p.remove();
+            return;
+        }
+        if (/^Rituel$/i.test(label) && /^Rituel\s*:\s*(oui|non)\b/i.test(whole)) {
+            p.remove();
+            return;
+        }
+        if (!/^2(?:e|ᵉ) sauvegarde$/i.test(label)) {
+            return;
+        }
+        const rest = document.createElement("span");
+        let node = strong.nextSibling;
+        while (node) {
+            const next = node.nextSibling;
+            rest.appendChild(node);
+            node = next;
+        }
+        const first = rest.firstChild;
+        if (first && first.nodeType === Node.TEXT_NODE) {
+            first.textContent = String(first.textContent || "").replace(/^\s*:\s*/, "");
+        }
+        const sentence = document.createElement("p");
+        sentence.append("Tu maîtrises les jets de sauvegarde liés à ");
+        while (rest.firstChild) sentence.appendChild(rest.firstChild);
+        const last = sentence.lastChild;
+        if (last && last.nodeType === Node.TEXT_NODE) {
+            last.textContent = String(last.textContent || "").replace(/\s*\.\s*$/, "").trimEnd();
+        }
+        sentence.append(".");
+        p.replaceWith(sentence);
+    });
+
+    root.querySelectorAll("ul.spe-masteries-list > li").forEach((li) => {
+        const strong = li.querySelector(":scope > strong");
+        const first = strong ? strong.nextSibling : li.firstChild;
+        if (first && first.nodeType === Node.TEXT_NODE) {
+            first.textContent = String(first.textContent || "").replace(/^\s*:\s*/, "");
+            if (String(first.textContent || "").trim() === "") first.remove();
+        }
+        const body = String(li.textContent || "")
+            .replace(String(strong?.textContent || ""), "")
+            .trim();
+        if (/^(aucune?s?|aucun(?: pour l['’]instant)?)\.?$/i.test(body)) {
+            li.remove();
+        }
+    });
+
+    root.querySelectorAll("ul.spe-masteries-list").forEach((list) => {
+        if (list.querySelector("li")) return;
+        const heading = list.previousElementSibling;
+        list.remove();
+        if (heading?.tagName === "H2" && /^Maîtrises\b/i.test(String(heading.textContent || ""))) {
+            heading.remove();
+        }
+    });
 }
 
 /**

@@ -45,7 +45,7 @@ class AptitudeController extends Controller
 
         $sortColumn = request()->get('sort', 'id');
         $sortOrder = request()->get('order', 'desc');
-        if (in_array($sortColumn, ['id', 'name', 'state', 'reuse_type', 'duration_type', 'range_type', 'created_at'], true)) {
+        if (in_array($sortColumn, ['id', 'name', 'state', 'reuse', 'duration', 'range', 'created_at'], true)) {
             $query->orderBy($sortColumn, $sortOrder);
         } else {
             $query->latest();

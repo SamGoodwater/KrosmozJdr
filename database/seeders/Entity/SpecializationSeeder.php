@@ -483,51 +483,13 @@ class SpecializationSeeder extends Seeder
         $aptitude = Aptitude::query()->where('name', $name)->first() ?? new Aptitude;
         $wasNew = ! $aptitude->exists;
 
-        $reuseType = (string) ($entry['reuse_type'] ?? Aptitude::REUSE_UNLIMITED);
-        if (! in_array($reuseType, [
-            Aptitude::REUSE_UNLIMITED,
-            Aptitude::REUSE_SHORT_REST,
-            Aptitude::REUSE_LONG_REST,
-            Aptitude::REUSE_TIMED,
-        ], true)) {
-            $reuseType = Aptitude::REUSE_UNLIMITED;
-        }
-
-        $durationType = (string) ($entry['duration_type'] ?? Aptitude::DURATION_PERMANENT);
-        if (! in_array($durationType, [
-            Aptitude::DURATION_INSTANT,
-            Aptitude::DURATION_TIMED,
-            Aptitude::DURATION_PERMANENT,
-            Aptitude::DURATION_WHILE_CONDITION,
-        ], true)) {
-            $durationType = Aptitude::DURATION_PERMANENT;
-        }
-
-        $rangeType = (string) ($entry['range_type'] ?? Aptitude::RANGE_SELF);
-        if (! in_array($rangeType, [
-            Aptitude::RANGE_SELF,
-            Aptitude::RANGE_DISTANCE,
-            Aptitude::RANGE_SENSE,
-        ], true)) {
-            $rangeType = Aptitude::RANGE_SELF;
-        }
-
         $aptitude->fill([
             'name' => $name,
             'description' => trim((string) ($entry['description'] ?? 'Aptitude de spécialisation')) ?: 'Aptitude de spécialisation',
             'effect' => trim((string) ($entry['effect'] ?? '')),
-            'reuse_type' => $reuseType,
-            'reuse_amount' => $entry['reuse_amount'] ?? null,
-            'reuse_unit' => $entry['reuse_unit'] ?? null,
-            'duration_type' => $durationType,
-            'duration_amount' => $entry['duration_amount'] ?? null,
-            'duration_unit' => $entry['duration_unit'] ?? null,
-            'duration_note' => $entry['duration_note'] ?? null,
-            'range_type' => $rangeType,
-            'range_amount' => $entry['range_amount'] ?? null,
-            'range_unit' => $entry['range_unit'] ?? null,
-            'range_sense' => $entry['range_sense'] ?? null,
-            'range_note' => $entry['range_note'] ?? null,
+            'reuse' => trim((string) ($entry['reuse'] ?? $entry['reuse_type'] ?? 'Illimitée')) ?: 'Illimitée',
+            'duration' => trim((string) ($entry['duration'] ?? $entry['duration_note'] ?? $entry['duration_type'] ?? 'Permanente')) ?: 'Permanente',
+            'range' => trim((string) ($entry['range'] ?? $entry['range_note'] ?? $entry['range_type'] ?? 'Soi')) ?: 'Soi',
         ]);
         if ($wasNew) {
             $aptitude->state = Aptitude::STATE_PLAYABLE;
