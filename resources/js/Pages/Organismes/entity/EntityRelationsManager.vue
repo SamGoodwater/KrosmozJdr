@@ -28,6 +28,7 @@ import { useEntitySurfaceStore } from "@/Composables/store/useEntitySurfaceStore
 import EntityPickerCore from '@/Pages/Organismes/entity/EntityPickerCore.vue';
 import { normalizeEntityType, getEntityResponseAdapter } from '@/Entities/entity-registry';
 import { resolveEntityViewComponent } from '@/Utils/entity/resolveEntityViewComponent';
+import { buildRelationSyncPayload } from '@/Utils/entity/relationSyncPayload';
 import { warnDev } from '@/Utils/dev-logger';
 
 const props = defineProps({
@@ -486,33 +487,11 @@ const relationsForm = useForm({
 // Sauvegarder les changements
 const saveRelations = () => {
     const itemIds = localRelations.value.map(item => item.id);
-    
-    // Si des pivots sont définis, envoyer les données avec les pivots
-    if (props.config.pivotFields && props.config.pivotFields.length > 0) {
-        // Format: { item_id: { pivot_field: value } }
-        const dataWithPivots = {};
-        itemIds.forEach(itemId => {
-            dataWithPivots[itemId] = {};
-            props.config.pivotFields.forEach((field) => {
-                const value = pivotValues.value[itemId]?.[field] ?? '';
-                if ((field === 'quantity' || field === 'price') && value !== '') {
-                    dataWithPivots[itemId][field] = Number(value) || 0;
-                } else if (field === 'character_level' || field === 'slot_index') {
-                    const n = Number(value);
-                    dataWithPivots[itemId][field] = Number.isFinite(n) && n >= 1 ? n : 1;
-                } else if (field === 'choice_order') {
-                    const n = Number(value);
-                    dataWithPivots[itemId][field] = Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
-                } else {
-                    dataWithPivots[itemId][field] = value;
-                }
-            });
-        });
-        relationsForm[props.relationType] = dataWithPivots;
-    } else {
-        // Pas de pivot, format simple (array d'IDs)
-        relationsForm[props.relationType] = itemIds;
-    }
+    relationsForm[props.relationType] = buildRelationSyncPayload(
+        itemIds,
+        props.config.pivotFields,
+        pivotValues.value,
+    );
     
     // Construire les paramètres de route (panoply pour panoplies, creature pour creatures, etc.)
     const entityParamName = props.entityType.endsWith('ies') 
