@@ -5,10 +5,21 @@ declare(strict_types=1);
 /**
  * Fiche jouable de spécialisation (gabarit 2.4.2.6) : le Milicien·ne.
  *
+ * Signature : Formation tactique. Les autres capacités sont des liens catalogue
+ * (réutilisées sur plusieurs spés), dont Connais ta cible au niveau 3.
+ *
  * @return array<string, mixed>
  */
 $guaranteed = 'garantie';
 $freeSlot = 'choix';
+
+$link = static function (string $name, string $slot = 'choix'): array {
+    return [
+        'name' => $name,
+        'type' => $slot,
+        'link' => true,
+    ];
+};
 
 $choices = [
     1 => '3 compétences',
@@ -68,9 +79,9 @@ return [
             'flavor' => 'On te donne un insigne, ou tu t’en fabriques un. Le premier geste, c’est de faire tenir deux personnes au même endroit.',
             'masteries' => [
                 'Outils' => 'Insigne, menottes, corde. Selon ta ville : étendard de poche, sifflet, lanternon.',
-                'Jets de sauvegarde' => 'Force, Constitution.',
+                'Jets de sauvegarde' => 'Force.',
                 'Compétences' => 'Choisis-en trois parmi : Athlétisme, Intimidation, Perception, Perspicacité, Persuasion.',
-                'Métiers' => 'Aucun métier offert. Tu peux en apprendre un comme n’importe qui (section 4.3).',
+                'Métiers' => 'Aucun métier offert.',
                 'Langues' => 'Aucune langue bonus.',
             ],
             'capacities' => [
@@ -78,51 +89,31 @@ return [
                     'name' => 'Formation tactique',
                     'type' => $guaranteed,
                     'pa' => '1',
-                    'effect' => 'Une fois par scène, tu places jusqu’à deux allié·e·s adjacents : chacun gagne +1 CA jusqu’à son prochain tour, ou se décale d’une case sans provoquer d’attaque. 1 PA depuis la réserve de Wakfu en combat.',
+                    'effect' => 'Une fois par scène, tu places jusqu’à deux alliés adjacents : chacun gagne +1 CA jusqu’à son prochain tour, ou se décale de 1,5 m sans s’exposer.',
                 ],
-                [
-                    'name' => 'Cri de ralliement',
-                    'type' => $guaranteed,
-                    'pa' => '1',
-                    'effect' => 'Variante de garantie : un cri net. Un allié à 6 cases qui est à terre, apeuré ou figé relance son jet, ou se relève. 1 PA depuis la réserve de Wakfu, 1×/scène.',
-                ],
-                [
-                    'name' => 'Garde du seuil',
-                    'type' => $freeSlot,
-                    'pa' => '1',
-                    'effect' => 'Tu bloques une porte, un passage d’une case ou un allié au sol. Tant que tu ne bouges pas, la première créature qui passe à travers toi s’arrête. 1 PA depuis la réserve de Wakfu pour poser, rien pour tenir.',
-                ],
-                [
-                    'name' => 'Menottes de fortune',
-                    'type' => $freeSlot,
-                    'pa' => '2',
-                    'effect' => 'Sur une créature déjà maîtrisée ou consentante : tu l’entraves (mains ou pieds). Hors combat : 1 minute. En combat : 2 PA depuis la réserve de Wakfu, jet d’Athlétisme contre elle.',
-                ],
+                $link('Alarme'),
+                $link('Aide'),
+                $link('Assistance'),
+                $link('Lumière'),
+                $link('Message'),
             ],
         ],
         3 => [
             'unlock_style' => true,
             'choice' => $choices[3],
-            'flavor' => 'On ne te laisse plus seul·e au premier rang. Quelqu’un colle à toi, et tu colles à lui.',
+            'flavor' => 'On ne te laisse plus seul·e au premier rang. Tu choisis ta cité, et tu apprends à lire qui te fait face.',
             'capacities' => [
                 [
-                    'name' => 'Garde rapprochée',
+                    'name' => 'Tenir la ligne',
                     'type' => $guaranteed,
                     'pa' => '1',
-                    'effect' => 'Tu désignes un allié adjacent. Jusqu’à la fin de ton prochain tour, les attaques qui le visent te visent toi si tu le veux. 1 PA depuis la réserve de Wakfu, pas de cumul.',
+                    'effect' => 'Toi et un allié adjacent : vous ne pouvez pas être déplacés de force tant que vous restez côte à côte. Une scène.',
                 ],
-                [
-                    'name' => 'Tenir la ligne',
-                    'type' => $freeSlot,
-                    'pa' => '1',
-                    'effect' => 'Toi et un allié adjacent : vous ne pouvez pas être déplacés de force tant que vous restez côte à côte. Une scène, ou 1 PA depuis la réserve de Wakfu en combat.',
-                ],
-                [
-                    'name' => 'Épaule contre épaule',
-                    'type' => $freeSlot,
-                    'pa' => '1',
-                    'effect' => 'Un allié adjacent gagne +1 aux jets de sauvegarde tant qu’il reste collé à toi. Une scène, ou 1 PA depuis la réserve de Wakfu en combat pour tenir jusqu’à ton prochain tour.',
-                ],
+                $link('Connais ta cible'),
+                $link('Sanctuaire'),
+                $link('Voir l\'invisible'),
+                $link('Zone de vérité'),
+                $link('Apaisement des émotions'),
             ],
             'aptitudes' => [
                 [
@@ -140,18 +131,15 @@ return [
                     'name' => 'Discipline',
                     'type' => $guaranteed,
                     'pa' => '2',
-                    'effect' => 'Toi et les allié·e·s qui t’entendent (6 cases) : avantage aux jets contre la peur et le charme jusqu’à la fin de la scène. 2 PA depuis la réserve de Wakfu, 1×/scène.',
+                    'effect' => 'Toi et les alliés qui t’entendent (9 m) : avantage aux jets contre la peur et le charme jusqu’à la fin de la scène. 1×/scène.',
                 ],
-                [
-                    'name' => 'Ronde',
-                    'type' => $freeSlot,
-                    'effect' => 'Hors combat, en 10 minutes, tu lis une rue, une caserne ou un camp : une issue, une sentinelle, un détail qui cloche. Le MJ tranche si le lieu n’a rien à dire.',
-                ],
-                [
-                    'name' => 'Appel de la ronde',
-                    'type' => $freeSlot,
-                    'effect' => 'En 10 minutes en ville ou dans une caserne, tu fais venir une patrouille ou un garde s’il en existe. Le MJ tranche s’il n’y a personne à appeler. 1×/jour.',
-                ],
+                $link('Passage sans trace'),
+                $link('Bouche magique'),
+                $link('Détection des pensées'),
+                $link('Localiser un objet'),
+                $link('Suggestion'),
+                $link('Silence'),
+                $link('Bourrasque')
             ],
         ],
         9 => [
@@ -162,25 +150,19 @@ return [
                     'name' => 'Commandement',
                     'type' => $guaranteed,
                     'pa' => '2',
-                    'effect' => 'Un allié à 6 cases agit tout de suite : une attaque, un déplacement ou une capacité déjà connue, à son coût. 2 PA depuis la réserve de Wakfu, 1×/tour. Ce n’est pas ton tour, c’est le sien avancé.',
+                    'effect' => 'Un allié à 9 m agit tout de suite : une attaque, un déplacement ou une capacité déjà connue, à son coût. 1×/tour.',
                 ],
-                [
-                    'name' => 'Insigne levé',
-                    'type' => $freeSlot,
-                    'effect' => 'En ville ou face à une milice, une garde, une troupe : avantage aux tests de Chance (Persuasion) et de Force (Intimidation) pour faire ouvrir, céder ou patienter. Une scène.',
-                ],
-                [
-                    'name' => 'Cordon de rue',
-                    'type' => $freeSlot,
-                    'pa' => '3',
-                    'effect' => 'Tu fermes un passage d’une case ou une porte. Les passant·e·s s’arrêtent. Forcer le cordon : jet d’Athlétisme contre toi. Une scène, 3 PA depuis la réserve de Wakfu.',
-                ],
+                $link('Localiser une créature'),
+                $link('Image majeure'),
+                $link('Petite hutte'),
+                $link('Cécité/Surdité'),
+                $link('Marche sur l\'eau'),
             ],
             'aptitudes' => [
                 [
                     'name' => 'Position d’autorité',
                     'type' => 'Contextuelle (ordre public)',
-                    'effect' => 'Face à des gardes, une milice, une foule ou quiconque reconnaît un uniforme, tu as l’avantage aux tests de Chance et de Force pour faire tenir un ordre simple (halte, passage, dégager).',
+                    'effect' => 'Face à des gardes, une milice, une foule ou quiconque reconnaît un uniforme, tu as l’avantage au premier test social de la scène pour faire tenir un ordre simple.',
                 ],
             ],
         ],
@@ -192,19 +174,13 @@ return [
                     'name' => 'Phalange',
                     'type' => $guaranteed,
                     'pa' => '2',
-                    'effect' => 'Toi et jusqu’à deux allié·e·s adjacents : +1 CA et vous ne pouvez pas être séparés de force. Jusqu’à la fin de ton prochain tour. 2 PA depuis la réserve de Wakfu, 1×/scène.',
+                    'effect' => 'Toi et jusqu’à deux alliés adjacents : +1 CA et vous ne pouvez pas être séparés de force jusqu’à la fin de ton prochain tour. 1×/scène.',
                 ],
-                [
-                    'name' => 'Rempart vivant',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu interposes ton corps : les dégâts d’une attaque ou d’une zone qui touche un allié adjacent te sont transférés. 1 réaction. Tu peux encore tomber.',
-                ],
-                [
-                    'name' => 'Recul ordonné',
-                    'type' => $freeSlot,
-                    'pa' => '2',
-                    'effect' => 'Toi et jusqu’à deux allié·e·s adjacents reculez de 2 cases sans provoquer d’attaque. 2 PA depuis la réserve de Wakfu, 1×/scène.',
-                ],
+                $link('Respiration aquatique'),
+                $link('Divination'),
+                $link('Scrutation'),
+                $link('Liberté de mouvement'),
+                $link('Banissement')
             ],
         ],
         15 => [
@@ -215,25 +191,20 @@ return [
                     'name' => 'Ordre de charge',
                     'type' => $guaranteed,
                     'pa' => '3',
-                    'effect' => 'Jusqu’à trois allié·e·s à 6 cases se déplacent de 3 cases vers une cible que tu nommes et peuvent attaquer s’ils arrivent au contact. 3 PA depuis la réserve de Wakfu, 1×/scène. Chacun paie encore ses PA d’attaque.',
+                    'effect' => 'Jusqu’à trois alliés à 9 m se déplacent de 5 m vers une cible que tu nommes. 1×/scène. Chacun paie encore ses PA d’attaque.',
                 ],
-                [
-                    'name' => 'Ralliement',
-                    'type' => $freeSlot,
-                    'pa' => '4',
-                    'effect' => 'Les allié·e·s à 6 cases qui t’entendent : fin de peur, de charme ou d’étourdissement mineur, et 1d4 PV. 4 PA depuis la réserve de Wakfu, 1×/scène.',
-                ],
-                [
-                    'name' => 'Veille partagée',
-                    'type' => $freeSlot,
-                    'effect' => 'Quand tu poses un camp, une veille est couverte sans fatigue. Le groupe ne peut pas être surpris tant que tu es éveillé·e. Jusqu’au prochain repos.',
-                ],
+                $link('Aide'),
+                $link('Sanctuaire'),
+                $link('Zone de vérité'),
+                $link('Localiser une créature'),
+                $link('Scrutation'),
+                $link('Banissement')
             ],
             'aptitudes' => [
                 [
                     'name' => 'Général',
                     'type' => 'Passive',
-                    'effect' => 'Au premier round d’un combat que tu as vu venir, tes allié·e·s à 6 cases ne peuvent pas être surpris et gagnent +1 aux jets d’initiative. Hors combat : avantage pour poser un plan de 10 minutes.',
+                    'effect' => 'Au premier round d’un combat que tu as vu venir, tes alliés à 9 m ne peuvent pas être surpris. Hors combat : avantage pour poser un plan de 10 minutes.',
                 ],
             ],
         ],
@@ -244,19 +215,12 @@ return [
                 [
                     'name' => 'Dernière ligne',
                     'type' => $guaranteed,
-                    'effect' => 'Une fois par jour, tant que tu es debout, les allié·e·s à 6 cases ne peuvent pas tomber à 0 PV : ils restent à 1. Ça dure jusqu’à la fin de ton prochain tour. Ensuite, les comptes se règlent.',
+                    'effect' => 'Une fois par jour, tant que tu es debout, les alliés à 9 m ne peuvent pas tomber à 0 PV : ils restent à 1 jusqu’à la fin de ton prochain tour.',
                 ],
-                [
-                    'name' => 'Bannière',
-                    'type' => $freeSlot,
-                    'pa' => '6',
-                    'effect' => 'Tu plantes un étendard (1 case). Tant qu’il tient (1 heure ou jusqu’à destruction), les allié·e·s dans 6 cases ont l’avantage contre la peur et +1 aux jets d’attaque. 6 PA depuis la réserve de Wakfu.',
-                ],
-                [
-                    'name' => 'Relève',
-                    'type' => $freeSlot,
-                    'effect' => 'Réaction : tu échanges ta case avec un allié à 6 cases. 1×/scène. L’allié arrive où tu étais, tu arrives où iel était.',
-                ],
+                $link('Divination'),
+                $link('Scrutation'),
+                $link('Petite hutte'),
+                $link('Alarme'),
             ],
         ],
     ],

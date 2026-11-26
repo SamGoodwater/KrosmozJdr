@@ -5,10 +5,21 @@ declare(strict_types=1);
 /**
  * Fiche jouable de spécialisation (gabarit 2.4.2.6) : le Négociant·e.
  *
+ * Signature : Cote du jour. Les autres capacités sont des liens catalogue
+ * (réutilisées sur plusieurs spés), dont Connais ta cible au niveau 3.
+ *
  * @return array<string, mixed>
  */
 $guaranteed = 'garantie';
 $freeSlot = 'choix';
+
+$link = static function (string $name, string $slot = 'choix'): array {
+    return [
+        'name' => $name,
+        'type' => $slot,
+        'link' => true,
+    ];
+};
 
 $choices = [
     1 => '3 compétences',
@@ -80,21 +91,12 @@ return [
                     'pa' => '1',
                     'effect' => 'Dans un marché, tu évalues le prix juste d’un objet courant sans jet. Pour une pièce Rare ou plus : avantage au test d’Intelligence. 10 minutes, ou 1 PA depuis la réserve de Wakfu en combat si l’objet est sous tes yeux.',
                 ],
-                [
-                    'name' => 'Carnet ouvert',
-                    'type' => $guaranteed,
-                    'effect' => 'Variante de garantie : après 10 minutes en ville, tu sais qui achète ce que tu as dans les sacs, et qui vend ce que tu cherches. Un nom, pas un inventaire complet. 1×/ville/jour.',
-                ],
-                [
-                    'name' => 'Le bon mot',
-                    'type' => $freeSlot,
-                    'effect' => 'Une fois par scène sociale, tu relances un test de Persuasion, ou tu transformes un échec en « pas encore, reviens demain » plutôt qu’en porte qui claque.',
-                ],
-                [
-                    'name' => 'Balance honnête',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu détectes faux poids, fausse pièce, mesure truquée sans jet sur le courant. Sur une fraude soignée : avantage à Investigation. 1 minute.',
-                ],
+                $link('Compréhension des langues'),
+                $link('Suggestion'),
+                $link('Message'),
+                $link('Zone de vérité'),
+                $link('Détection des pensées'),
+                $link('Assistance'),
             ],
         ],
         3 => [
@@ -107,16 +109,13 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Tu obtiens un rendez-vous, une autorisation de stand, un laissez-passer de quartier. Pas un accès de donjon. 10 minutes de palabre, 1×/lieu/jour.',
                 ],
-                [
-                    'name' => 'Réseau de la ville',
-                    'type' => $freeSlot,
-                    'effect' => 'En arrivant dans une ville connue du Monde des Douze, tu nommes 1 contact (marchand, garde achetable, scribe). Le MJ peut le refuser s’il n’a aucun sens. 1×/ville.',
-                ],
-                [
-                    'name' => 'Arrhes',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu poses un acompte (10 % du prix, minimum 10 kamas). Le marchand te réserve l’objet jusqu’au lendemain. 1×/boutique/jour.',
-                ],
+                $link('Connais ta cible'),
+                $link('Compréhension des langues'),
+                $link('Suggestion'),
+                $link('Message'),
+                $link('Zone de vérité'),
+                $link('Apaisement des émotions'),
+                $link('Charme personne')
             ],
             'aptitudes' => [
                 [
@@ -135,16 +134,13 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Quand on te propose un prix ou un marché, tu forces un second round même après un refus. Une fois par interlocuteur et par jour. Le deuxième jet n’a pas l’avantage : il a le droit d’exister.',
                 ],
-                [
-                    'name' => 'Lire la salle',
-                    'type' => $freeSlot,
-                    'effect' => 'En 1 minute d’observation, tu cibles qui a de l’argent, qui ment sur le prix, qui n’est pas le vrai décideur. Test de Sagesse (Perspicacité), DD 12. Un fait, pas une fiche complète.',
-                ],
-                [
-                    'name' => 'Échantillon',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu obtiens un échantillon, un prix écrit ou une adresse. 10 minutes de discussion. Le MJ tranche s’il n’y a rien à montrer.',
-                ],
+                $link('Détection des pensées'),
+                $link('Suggestion'),
+                $link('Zone de vérité'),
+                $link('Message'),
+                $link('Envoi de message'),
+                $link('Divination'),
+                $link('Charme personne')
             ],
         ],
         9 => [
@@ -156,17 +152,11 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Tu rédiges un accord que les deux parties comprennent (10 minutes). Tricher ensuite laisse des traces : réputation, guildes, un PNJ qui s’en souvient. Utile pour le MJ, pas un sort de geas.',
                 ],
-                [
-                    'name' => 'Commission discrète',
-                    'type' => $freeSlot,
-                    'pa' => '3',
-                    'effect' => 'Tu achètes ou vends pour quelqu’un d’autre sans que ton nom apparaisse. 3 PA depuis la réserve de Wakfu, une scène de palabre. Un test de Supercherie si on cherche activement.',
-                ],
-                [
-                    'name' => 'Caution',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu te portes garant·e pour un allié : avantage à son test social en cours, mais c’est toi qui dois si ça tourne mal. 1×/scène.',
-                ],
+                $link('Scrutation'),
+                $link('Divination'),
+                $link('Localiser un objet'),
+                $link('Connais ta cible'),
+                $link('Image majeure'),
             ],
             'aptitudes' => [
                 [
@@ -185,17 +175,12 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Tu organises un transport (biens, personnes, message) entre deux villes. Coût, délais, risques de route : le MJ pose une table courte. 1 jour de préparation. 1×/semaine.',
                 ],
-                [
-                    'name' => 'Offre qu’on n’ose pas refuser',
-                    'type' => $freeSlot,
-                    'pa' => '1',
-                    'effect' => 'Social tendu : tu transformes une négociation en test d’Intimidation, ou l’inverse, selon le style. 1 PA depuis la réserve de Wakfu en combat si ça se joue à voix haute. Pas un sort de charme.',
-                ],
-                [
-                    'name' => 'Entrepôt distant',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu fais arriver un objet Commun déjà payé, en 24 heures, dans une ville que tu as déjà visitée. 1×/semaine. Pas un artefact.',
-                ],
+                $link('Envoi de message'),
+                $link('Suggestion'),
+                $link('Détection des pensées'),
+                $link('Divination'),
+                $link('Scrutation'),
+                $link('Métamorphose'),
             ],
         ],
         15 => [
@@ -207,16 +192,11 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Tu trouves acheteur ou vendeur pour un objet Très rare, en 1d4 jours, avec 10 % de commission. Pas de garantie sur l’Unique. 1×/mois.',
                 ],
-                [
-                    'name' => 'Conseil des kamas',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu pèses sur une décision de guilde, de milice marchande ou de noble fauché. Une fois par arc, avec le MJ. Échec possible, et ça se sait.',
-                ],
-                [
-                    'name' => 'Associé d’un jour',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu prends un PNJ marchand comme relais pour une scène : iel parle à ta place, tu as l’avantage au test. 1×/jour. Iel n’est pas ton employé.',
-                ],
+                $link('Scrutation'),
+                $link('Divination'),
+                $link('Localiser un objet'),
+                $link('Connais ta cible'),
+                $link('Zone de vérité'),
             ],
             'aptitudes' => [
                 [
@@ -235,18 +215,11 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Un marché, une ville ou une compagnie te doit une faveur majeure (sauf suicide politique). Avec le MJ, une fois. Ça change une campagne, pas un jet de dégâts.',
                 ],
-                [
-                    'name' => 'Maison de commerce',
-                    'type' => $freeSlot,
-                    'pa' => '6',
-                    'effect' => 'Tu déplies un comptoir pour 8 heures : balance, coffre, silence des curieux. Rien de créé ne survit. 6 PA depuis la réserve de Wakfu, 1×/jour.',
-                ],
-                [
-                    'name' => 'Comptoir de poche',
-                    'type' => $freeSlot,
-                    'pa' => '6',
-                    'effect' => 'Tu déplies un comptoir pour 8 heures : balance, coffre, deux chaises. On peut y conclure. 6 PA depuis la réserve de Wakfu, 1×/jour.',
-                ],
+                $link('Divination'),
+                $link('Scrutation'),
+                $link('Suggestion'),
+                $link('Métamorphose'),
+                $link('Oeil magique'),
             ],
         ],
     ],

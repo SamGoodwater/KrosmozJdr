@@ -5,10 +5,21 @@ declare(strict_types=1);
 /**
  * Fiche jouable de spécialisation (gabarit 2.4.2.6) : l’Explorateur·rice.
  *
+ * Signature : Orientation. Les autres capacités sont des liens catalogue,
+ * dont Connais ta cible au niveau 3.
+ *
  * @return array<string, mixed>
  */
 $guaranteed = 'garantie';
 $freeSlot = 'choix';
+
+$link = static function (string $name, string $slot = 'choix'): array {
+    return [
+        'name' => $name,
+        'type' => $slot,
+        'link' => true,
+    ];
+};
 
 $choices = [
     1 => '3 compétences',
@@ -79,22 +90,12 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Hors combat, tu sais toujours le nord et le temps écoulé depuis le dernier camp, tant que tu es à l’air libre. En 10 minutes tu traces un itinéraire simple. Le MJ tranche si le ciel est magiquement brouillé.',
                 ],
-                [
-                    'name' => 'Lecture de traces',
-                    'type' => $guaranteed,
-                    'effect' => 'Variante de garantie : 10 minutes sur un sol. Tu dis qui a passé (taille, nombre, fraîcheur), pas ce qu’il pensait. Un succès de Survie suffit. La magie qui efface les traces te ferme la porte.',
-                ],
-                [
-                    'name' => 'Détection de pièges',
-                    'type' => $freeSlot,
-                    'pa' => '1',
-                    'effect' => 'En avançant à vitesse réduite, tu as l’avantage pour voir les pièges non magiques dans 3 cases. En combat : 1 PA depuis la réserve de Wakfu pour inspecter une case adjacente.',
-                ],
-                [
-                    'name' => 'Feu de camp',
-                    'type' => $freeSlot,
-                    'effect' => 'En 10 minutes tu poses un camp sommaire : feu, abri contre la pluie, veille. Le groupe ignore le désavantage du froid simple pour un repos. 1×/jour.',
-                ],
+                $link('Alarme'),
+                $link('Passage sans trace'),
+                $link('Localiser une créature'),
+                $link('Lumière'),
+                $link('Aide'),
+                $link('Assistance'),
             ],
         ],
         3 => [
@@ -107,16 +108,11 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'En 10 minutes tu trouves ou improvises un abri pour le groupe (6 créatures) : hors vue d’une route, d’une patrouille banale. Une nuit. La magie qui cherche encore te trouve.',
                 ],
-                [
-                    'name' => 'Rappel de piste',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu marques un lieu foulé (cairn, entaille, nœud). Pendant 24 heures tu sais dans quelle direction il se trouve dans un rayon d’un kilomètre. 1×/jour.',
-                ],
-                [
-                    'name' => 'Marque de sentier',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu laisses trois signes que seuls tes allié·e·s lisent sans jet. Ils restent jusqu’au prochain repos long, ou jusqu’à la pluie battante. 1 minute.',
-                ],
+                $link('Connais ta cible'),
+                $link('Petite hutte'),
+                $link('Passage sans trace'),
+                $link('Alarme'),
+                $link('Localiser une créature'),
             ],
             'aptitudes' => [
                 [
@@ -135,16 +131,13 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Après une journée de marche, tu poses une carte utilisable : le groupe a l’avantage pour retracer le même chemin. Une région à la fois. 1×/voyage.',
                 ],
-                [
-                    'name' => 'Passage discret',
-                    'type' => $freeSlot,
-                    'effect' => 'Pendant une heure, le groupe (6) voyage sans laisser de traces évidentes. Vitesse réduite. Ça ne trompe pas un nez magique.',
-                ],
-                [
-                    'name' => 'Fil d’Ariane',
-                    'type' => $freeSlot,
-                    'effect' => 'Pendant une heure, tu retrouves le chemin déjà parcouru aujourd’hui, même dans le noir ou la brume. Magie qui brouille : le MJ tranche.',
-                ],
+                $link('Passage sans trace'),
+                $link('Respiration aquatique'),
+                $link('Marche sur l\'eau'),
+                $link('Localiser une créature'),
+                $link('Petite hutte'),
+                $link('Alarme'),
+                $link('Bourrasque')
             ],
         ],
         9 => [
@@ -157,16 +150,13 @@ return [
                     'pa' => '3',
                     'effect' => 'Tu scelles un campement pour 8 heures : les oreilles indiscrètes et les bêtes banales glissent. Une créature qui force l’entrée te réveille. 3 PA depuis la réserve de Wakfu.',
                 ],
-                [
-                    'name' => 'Corde et grappin',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu ouvres un passage vertical (falaise, mur, puits) pour le groupe. 10 minutes, test de Survie ou d’Athlétisme si c’est vilain. Une fois le passage posé, les autres n’ont pas à le refaire.',
-                ],
-                [
-                    'name' => 'Ration de marche',
-                    'type' => $freeSlot,
-                    'effect' => 'Avec 10 minutes et ce que le terrain offre, tu improvises un repas pour six. Ça calme la faim, pas un repos. 1×/jour.',
-                ],
+                $link('Petite hutte'),
+                $link('Respiration aquatique'),
+                $link('Marche sur l\'eau'),
+                $link('Localiser une créature'),
+                $link('Alarme'),
+                $link('Passage sans trace'),
+                $link('Vol')
             ],
             'aptitudes' => [
                 [
@@ -185,16 +175,11 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Une fois par jour, tu trouves un raccourci : le voyage du jour prend la moitié du temps, ou évite une rencontre banale. Le MJ tranche si le terrain refuse.',
                 ],
-                [
-                    'name' => 'Veille',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu montes la garde. Tant que tu es éveillé·e, le groupe ne peut pas être surpris par ce que tu pourrais voir ou entendre. Un repos, tu dors moins : pas d’autre bénéfice de veille.',
-                ],
-                [
-                    'name' => 'Abri de toile',
-                    'type' => $freeSlot,
-                    'effect' => 'En 10 minutes tu poses un abri contre pluie et vent pour six. Tient jusqu’au prochain repos. Pas un fortin.',
-                ],
+                $link('Respiration aquatique'),
+                $link('Marche sur l\'eau'),
+                $link('Passage sans trace'),
+                $link('Localiser une créature'),
+                $link('Liberté de mouvement'),
             ],
         ],
         15 => [
@@ -206,17 +191,11 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Pendant un voyage, tes allié·e·s ont l’avantage aux tests de Survie et de Perception que tu diriges. Ils n’ont pas le tien : tu montres, ils suivent.',
                 ],
-                [
-                    'name' => 'Traversée impossible',
-                    'type' => $freeSlot,
-                    'pa' => '4',
-                    'effect' => 'Une fois par semaine, tu fais passer le groupe (6) un obstacle qui devrait les arrêter : crête, marais, éboulis. Une heure, 4 PA depuis la réserve de Wakfu. Un mur de magie tient encore.',
-                ],
-                [
-                    'name' => 'Relais de piste',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu caches un sac (1 jour de rations, une corde, une lanterne) en un lieu déjà foulé. Tu le retrouves plus tard. 1 cache à la fois.',
-                ],
+                $link('Petite hutte'),
+                $link('Alarme'),
+                $link('Localiser une créature'),
+                $link('Divination'),
+                $link('Connais ta cible'),
             ],
             'aptitudes' => [
                 [
@@ -235,18 +214,11 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Une fois par mois, tu ouvres un chemin vers un lieu que tu as déjà foulé, même sur un autre continent. Le groupe (6) arrive au plus près praticable. Un lieu jamais vu exige un ancrage (objet, carte, témoin).',
                 ],
-                [
-                    'name' => 'Refuge de fin de piste',
-                    'type' => $freeSlot,
-                    'pa' => '6',
-                    'effect' => 'Tu déplies un camp sûr pour 24 heures : toiles, feu, silence extérieur. Rien de créé ne survit. 6 PA depuis la réserve de Wakfu, 1×/jour.',
-                ],
-                [
-                    'name' => 'Bivouac de poche',
-                    'type' => $freeSlot,
-                    'pa' => '6',
-                    'effect' => 'Tu déplies un camp sûr pour 8 heures : tentes, feu, silence extérieur. 6 PA depuis la réserve de Wakfu, 1×/jour.',
-                ],
+                $link('Petite hutte'),
+                $link('Scrutation'),
+                $link('Divination'),
+                $link('Passage sans trace'),
+                $link('Liberté de mouvement'),
             ],
         ],
     ],

@@ -46,6 +46,8 @@ class SpecializationSeeder extends Seeder
             ['courtisan', 'Courtisan·e', 'courtisan_e', 'import-specialization-courtisan-e', 'Import legacy — Spécialisation Courtisan·e', 'import-courtisan-e', 'Spécialisation tournée vers les cours, l’étiquette et l’intrigue politique.'],
         ];
 
+        $this->seedSharedCapabilities(app(LegacyEntitySectionImportService::class)->resolveDefaultCreatorId());
+
         foreach ($playables as [$slug, $name, $legacySlug, $pageSlug, $pageTitle, $sectionPrefix, $short]) {
             if ($this->seedAuthoredPlayable($importer, $slug)) {
                 continue;
@@ -427,6 +429,64 @@ class SpecializationSeeder extends Seeder
     }
 
     /**
+     * Capacités partagées entre plusieurs spécialisations (catalogue + fiches écrites).
+     * Ne doit pas écraser un effet déjà en base quand on ne fait que lier.
+     */
+    private function seedSharedCapabilities(?int $creatorId): void
+    {
+        $path = database_path('seeders/data/playable-specializations/_shared-capabilities.php');
+        if (! is_file($path)) {
+            return;
+        }
+
+        /** @var mixed $shared */
+        $shared = require $path;
+        if (! is_array($shared)) {
+            return;
+        }
+
+        foreach ($shared['authored'] ?? [] as $entry) {
+            if (is_array($entry)) {
+                $this->upsertSpecializationCapability($entry, false, (int) ($entry['level'] ?? 3), $creatorId);
+            }
+        }
+
+        foreach ($shared['catalog_rewrites'] ?? [] as $entry) {
+            if (! is_array($entry)) {
+                continue;
+            }
+            $name = trim((string) ($entry['name'] ?? ''));
+            if ($name === '') {
+                continue;
+            }
+            $capability = Capability::query()->where('name', $name)->first();
+            if (! $capability) {
+                $this->command?->warn("Réécriture catalogue ignorée : capacité « {$name} » absente.");
+
+                continue;
+            }
+            $fill = [];
+            foreach (['effect', 'description', 'pa', 'casting_time', 'duration', 'time_before_use_again', 'po'] as $field) {
+                if (array_key_exists($field, $entry)) {
+                    $fill[$field] = $entry[$field];
+                }
+            }
+            if (array_key_exists('ritual_available', $entry)) {
+                $fill['ritual_available'] = (bool) $entry['ritual_available'];
+            }
+            if (array_key_exists('is_magic', $entry)) {
+                $fill['is_magic'] = (bool) $entry['is_magic'];
+            }
+            if (array_key_exists('level', $entry)) {
+                $fill['level'] = (string) $entry['level'];
+            }
+            if ($fill !== []) {
+                $capability->fill($fill)->save();
+            }
+        }
+    }
+
+    /**
      * @param  array<string, mixed>  $entry
      */
     private function upsertSpecializationCapability(array $entry, bool $isPassive, int $palier, ?int $creatorId): void
@@ -436,31 +496,44 @@ class SpecializationSeeder extends Seeder
             return;
         }
 
-        $capability = Capability::query()->where('name', $name)->first() ?? new Capability;
+        $capability = Capability::query()->where('name', $name)->first();
+        $linkOnly = (bool) ($entry['link'] ?? false);
+
+        // Lien catalogue : on attache le nom sans réécrire l’effet existant.
+        if ($linkOnly) {
+            if (! $capability) {
+                $this->command?->warn("Lien capacité « {$name} » : fiche absente du catalogue, entrée ignorée.");
+            }
+
+            return;
+        }
+
+        $capability ??= new Capability;
         $wasNew = ! $capability->exists;
         $type = trim((string) ($entry['type'] ?? ''));
         if (in_array($type, ['emplacement libre', '2ᵉ capacité'], true)) {
             $type = 'choix';
         }
 
-        $capability->fill([
+        $fill = [
             'name' => $name,
             'description' => $type !== ''
                 ? $type
                 : ($isPassive ? 'Aptitude de spécialisation' : 'Capacité de spécialisation'),
             'effect' => trim((string) ($entry['effect'] ?? '')),
-            'level' => (string) max(1, $palier),
+            'level' => (string) max(1, (int) ($entry['level'] ?? $palier)),
             'pa' => $isPassive ? '0' : (string) ($entry['pa'] ?? '0'),
-            'po' => '0',
-            'po_editable' => false,
-            'time_before_use_again' => '0',
-            'casting_time' => '0',
+            'po' => (string) ($entry['po'] ?? '0'),
+            'po_editable' => (bool) ($entry['po_editable'] ?? false),
+            'time_before_use_again' => (string) ($entry['time_before_use_again'] ?? '0'),
+            'casting_time' => (string) ($entry['casting_time'] ?? '0'),
             'duration' => $isPassive ? 'permanent' : (string) ($entry['duration'] ?? '0'),
-            'element' => 0,
+            'element' => (int) ($entry['element'] ?? 0),
             'is_magic' => (bool) ($entry['is_magic'] ?? true),
-            'ritual_available' => false,
+            'ritual_available' => (bool) ($entry['ritual_available'] ?? false),
             'is_passive' => $isPassive,
-        ]);
+        ];
+        $capability->fill($fill);
         if ($wasNew) {
             $capability->state = Capability::STATE_PLAYABLE;
             $capability->read_level = User::ROLE_GUEST;

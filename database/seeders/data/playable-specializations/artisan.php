@@ -5,10 +5,20 @@ declare(strict_types=1);
 /**
  * Fiche jouable de spécialisation (gabarit 2.4.2.6) : l’Artisan·e.
  *
+ * Signature : Œil du matériau. Capacités catalogue d’identification et d’outils.
+ *
  * @return array<string, mixed>
  */
 $guaranteed = 'garantie';
 $freeSlot = 'choix';
+
+$link = static function (string $name, string $slot = 'choix'): array {
+    return [
+        'name' => $name,
+        'type' => $slot,
+        'link' => true,
+    ];
+};
 
 $choices = [
     1 => '3 compétences',
@@ -75,22 +85,13 @@ return [
                     'pa' => '1',
                     'effect' => 'En 10 minutes (1 PA depuis la réserve de Wakfu en combat), tu estimes rareté, défauts et usage d’une ressource ou d’un objet non magique. Tu ne lis pas les enchantements volontairement cachés.',
                 ],
-                [
-                    'name' => 'Établi familier',
-                    'type' => $guaranteed,
-                    'effect' => 'Variante de garantie : une heure sur un vrai établi, tu fabriques un objet Commun de ton métier sans jet, pourvu que tu aies les ressources. Hors combat. 1×/jour.',
-                ],
-                [
-                    'name' => 'Réparation de fortune',
-                    'type' => $freeSlot,
-                    'pa' => '2',
-                    'effect' => 'Avec tes outils, tu remets en état un objet cassé ou usé. Hors combat : 1 heure. En combat : 2 PA depuis la réserve de Wakfu, l’objet tient jusqu’à la fin de la scène puis lâche. 1×/scène.',
-                ],
-                [
-                    'name' => 'Marque d’atelier',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu marques une pièce. Les gens de métier te reconnaissent. Avantage aux tests de Chance auprès d’une guilde qui a vu ton travail, désavantage si tu as vendu de la camelote.',
-                ],
+                $link('Identification'),
+                $link('Lumière'),
+                $link('Main du mage'),
+                $link('Localiser un objet'),
+                $link('Bouche magique'),
+                $link('Alarme'),
+                $link('Réparation')
             ],
         ],
         3 => [
@@ -103,16 +104,11 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Après 10 minutes sur un objet Commun ou Peu commun, tu tentes d’en tirer une recette imparfaite (test d’Intelligence, DD 12). Échec : les ressources de l’essai sont perdues. Aligné sur 4.3.3.',
                 ],
-                [
-                    'name' => 'Main sûre',
-                    'type' => $freeSlot,
-                    'effect' => 'Une fois par jour, tu relances un test de fabrication ou de réparation raté. Un 1 naturel reste un 1.',
-                ],
-                [
-                    'name' => 'Mesure juste',
-                    'type' => $freeSlot,
-                    'effect' => 'En 1 minute, tu estimes poids, volume, pièce manquante ou défaut d’assemblage d’un objet non magique. Un chiffre utile, pas une recette.',
-                ],
+                $link('Identification'),
+                $link('Main du mage'),
+                $link('Localiser un objet'),
+                $link('Lumière'),
+                $link('Bouche magique'),
             ],
             'aptitudes' => [
                 [
@@ -131,17 +127,12 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'En 1 heure tu improvises un mini-atelier. Tu travailles hors ville avec un malus de −2 aux tests d’outils, plus le blocage « pas d’établi ». Tient jusqu’au prochain repos long.',
                 ],
-                [
-                    'name' => 'Signature d’artisan',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu signes une pièce. On te reconnaît d’une ville à l’autre. Avantage social auprès des guildes qui respectent le geste ; les faussaires qui copient ta marque, tu les vois au premier coup d’œil (pas de jet).',
-                ],
-                [
-                    'name' => 'Coin et colle',
-                    'type' => $freeSlot,
-                    'pa' => '2',
-                    'effect' => 'Tu improvises une réparation qui tient une scène (porte, roue, attache). Ensuite ça lâche. 10 minutes hors combat, 2 PA depuis la réserve de Wakfu en combat. 1×/scène.',
-                ],
+                $link('Main du mage'),
+                $link('Identification'),
+                $link('Lumière'),
+                $link('Alarme'),
+                $link('Assistance'),
+                $link('Aide'),
             ],
         ],
         9 => [
@@ -153,16 +144,11 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Hors combat, 10 minutes, tes outils : un objet gagne +1 à un jet d’attaque ou de compétence lié à son usage, jusqu’au prochain repos. Pas de cumul, pas de forgemagie. 1×/objet/jour.',
                 ],
-                [
-                    'name' => 'Rien ne se perd',
-                    'type' => $freeSlot,
-                    'effect' => 'Quand tu fabriques, tu récupères la moitié des ressources communes d’un échec (arrondi inférieur). Les ingrédients rares et magiques, non.',
-                ],
-                [
-                    'name' => 'Recette lue à l’envers',
-                    'type' => $freeSlot,
-                    'effect' => 'Après 10 minutes sur un objet Commun, tu nommes les ressources évidentes de sa fabrication. Pas les runes, pas le secret d’un maître.',
-                ],
+                $link('Localiser un objet'),
+                $link('Voir l\'invisible'),
+                $link('Divination'),
+                $link('Bouche magique'),
+                $link('Main du mage'),
             ],
             'aptitudes' => [
                 [
@@ -181,16 +167,12 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Tu tentes un objet d’une rareté au-dessus de ton niveau de métier (DD 16, ressources de la rareté visée). Échec critique : l’établi est hors service jusqu’à un repos long. Exception, pas une routine. 1×/semaine.',
                 ],
-                [
-                    'name' => 'Réparer l’irréparable',
-                    'type' => $freeSlot,
-                    'effect' => 'Artefact fêlé, rune qui saute, mécanisme xélor : 8 heures, tes outils, un test d’Intelligence (DD 15). Succès : ça tient. Échec : tu n’aggrave pas. Le MJ tranche si c’est trop unique.',
-                ],
-                [
-                    'name' => 'Ajustement d’usage',
-                    'type' => $freeSlot,
-                    'effect' => '10 minutes, tes outils : un objet change d’usage mineur jusqu’au prochain repos (une sangle devient poignée, une lame devient levier). Pas de bonus de combat. 1×/jour.',
-                ],
+                $link('Identification'),
+                $link('Oeil magique'),
+                $link('Localiser un objet'),
+                $link('Lévitation'),
+                $link('Main du mage'),
+                $link('Fabrication')
             ],
         ],
         15 => [
@@ -202,16 +184,11 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Une fois par mois, tu vises une finition « pièce de maître » sans dépendre du 20 naturel : l’objet Commun ou Peu commun que tu sors se comporte comme Rare pour un bonus mineur (au MJ). Coût : ressources de Rare.',
                 ],
-                [
-                    'name' => 'Œuvre unique',
-                    'type' => $freeSlot,
-                    'effect' => 'Avec le MJ, tu conçois un objet Unique (pas une recette catalogue). Long, cher, mémorable. Une fois par campagne. Ce n’est pas un souhait.',
-                ],
-                [
-                    'name' => 'Copie honnête',
-                    'type' => $freeSlot,
-                    'effect' => 'En une journée, tu copies l’apparence d’un objet Commun ou Peu commun que tu as sous les yeux. Ça n’a pas la magie de l’original. 1×/semaine.',
-                ],
+                $link('Identification'),
+                $link('Scrutation'),
+                $link('Divination'),
+                $link('Métamorphose'),
+                $link('Alarme'),
             ],
             'aptitudes' => [
                 [
@@ -230,17 +207,11 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Une fois par mois, tu sors un chef-d’œuvre : un objet de ton métier, rareté Rare, sans jet. Les allié·e·s qui portent quelque chose que tu as touché ce mois-ci ont +1 à un jet d’outil ou d’attaque d’arme, 1×/scène. Moins fort qu’un sort de niveau 20.',
                 ],
-                [
-                    'name' => 'Le geste enseigné',
-                    'type' => $freeSlot,
-                    'effect' => 'En une semaine, tu transmets une technique à un personnage consentant : iel gagne un métier d’artisanat au niveau 1, ou +1 niveau s’iel l’a déjà (plafond 5). 1×/année.',
-                ],
-                [
-                    'name' => 'Établi de poche',
-                    'type' => $freeSlot,
-                    'pa' => '6',
-                    'effect' => 'Tu déplies un mini-atelier pour 8 heures. Tes tests d’outils n’ont plus le malus « pas d’établi ». 6 PA depuis la réserve de Wakfu, 1×/jour.',
-                ],
+                $link('Identification'),
+                $link('Main du mage'),
+                $link('Localiser un objet'),
+                $link('Divination'),
+                $link('Lévitation'),
             ],
         ],
     ],

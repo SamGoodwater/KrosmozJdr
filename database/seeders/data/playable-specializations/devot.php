@@ -5,10 +5,21 @@ declare(strict_types=1);
 /**
  * Fiche jouable de spécialisation (gabarit 2.4.2.6) : le Dévot.
  *
+ * Garantie palier 1 : Bénédiction (lien catalogue). Signatures aux paliers
+ * suivants. Bénédiction reste disponible en choix catalogue.
+ *
  * @return array<string, mixed>
  */
 $guaranteed = 'garantie';
 $freeSlot = 'choix';
+
+$link = static function (string $name, string $slot = 'choix'): array {
+    return [
+        'name' => $name,
+        'type' => $slot,
+        'link' => true,
+    ];
+};
 
 $choices = [
     1 => '3 compétences',
@@ -72,26 +83,13 @@ return [
                 [
                     'name' => 'Bénédiction',
                     'type' => $guaranteed,
-                    'pa' => '1',
-                    'effect' => 'Tu touches une créature consentante : +1 au prochain jet d’attaque, de sauvegarde ou de compétence. Jusqu’à la fin de son prochain tour. 1 PA depuis la réserve de Wakfu, 1×/tour. Pas de cumul.',
+                    'link' => true,
                 ],
-                [
-                    'name' => 'Prière',
-                    'type' => $guaranteed,
-                    'pa' => '1',
-                    'effect' => 'Variante de garantie : une minute hors combat (1 PA depuis la réserve de Wakfu en combat), tu poses une question simple à ce que tu sers. Le MJ répond par un oui, un non, ou un silence. 1×/scène.',
-                ],
-                [
-                    'name' => 'Guérison mineure',
-                    'type' => $freeSlot,
-                    'pa' => '1',
-                    'effect' => 'Tu touches une créature : 1d4 PV. Hors combat, 10 minutes et des bandelettes : 1d4 de plus. 1 PA depuis la réserve de Wakfu en combat, 1×/tour. Ce n’est pas un Mot Vivifiant.',
-                ],
-                [
-                    'name' => 'Eau bénite',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu consacres une gorgée. Jetée (1 case) : une créature corrompue, morte-vivante ou clairement maléfique a désavantage à son prochain jet. Une fiole, 1×/scène.',
-                ],
+                $link('Sanctuaire'),
+                $link('Aide'),
+                $link('Lumière'),
+                $link('Apaisement des émotions'),
+                $link('Assistance'),
             ],
         ],
         3 => [
@@ -105,17 +103,11 @@ return [
                     'pa' => '1',
                     'effect' => 'Un allié qui t’entend (6 cases) : fin de peur ou d’un chagrin de scène, et +1 au prochain jet de Sagesse. 1 PA depuis la réserve de Wakfu, 1×/scène.',
                 ],
-                [
-                    'name' => 'Seuil béni',
-                    'type' => $freeSlot,
-                    'pa' => '2',
-                    'effect' => 'Tu marques une porte, une tente ou un lit. Pendant 8 heures, la première créature malveillante qui force l’entrée te réveille et subit désavantage à son premier jet. 2 PA depuis la réserve de Wakfu.',
-                ],
-                [
-                    'name' => 'Pain partagé',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu partages un repas simple. Jusqu’au prochain repos, jusqu’à six convives ont l’avantage au prochain jet contre la peur. 10 minutes, 1×/jour.',
-                ],
+                $link('Apaisement des émotions'),
+                $link('Sanctuaire'),
+                $link('Aide'),
+                $link('Lumière'),
+                $link('Zone de vérité'),
             ],
             'aptitudes' => [
                 [
@@ -135,18 +127,12 @@ return [
                     'pa' => '2',
                     'effect' => 'Tu touches une créature : tu retires Empoisonné, Affaibli ou un mal mineur du même ordre. 10 minutes hors combat, 2 PA depuis la réserve de Wakfu en combat. 1×/scène.',
                 ],
-                [
-                    'name' => 'Lumière du rite',
-                    'type' => $freeSlot,
-                    'pa' => '2',
-                    'effect' => 'Une lueur dans 3 cases autour de toi, une scène. Les invisibles non magiques apparaissent comme une brume. Les morts-vivants ont désavantage pour se cacher. 2 PA depuis la réserve de Wakfu.',
-                ],
-                [
-                    'name' => 'Absolution légère',
-                    'type' => $freeSlot,
-                    'pa' => '2',
-                    'effect' => 'Tu poses la main : un allié se débarrasse d’une honte, d’un trouble mineur ou d’un cauchemar de la nuit. Ça ne soigne pas les PV. 2 PA depuis la réserve de Wakfu, 1×/scène.',
-                ],
+                $link('Bénédiction'),
+                $link('Lumière'),
+                $link('Voir l\'invisible'),
+                $link('Sanctuaire'),
+                $link('Apaisement des émotions'),
+                $link('Silence')
             ],
         ],
         9 => [
@@ -157,20 +143,13 @@ return [
                     'name' => 'Bénédiction majeure',
                     'type' => $guaranteed,
                     'pa' => '2',
-                    'effect' => 'Jusqu’à trois créatures qui t’entendent : +1 aux jets d’attaque et de sauvegarde jusqu’à la fin de ton prochain tour. 2 PA depuis la réserve de Wakfu, 1×/scène. Pas de cumul avec Bénédiction.',
+                    'effect' => 'Jusqu’à trois créatures qui t’entendent : +1 aux jets d’attaque et de sauvegarde jusqu’à la fin de ton prochain tour. 2 PA depuis la réserve de Wakfu, 1×/scène. Pas de cumul avec le sort Bénédiction.',
                 ],
-                [
-                    'name' => 'Sanctuaire',
-                    'type' => $freeSlot,
-                    'pa' => '3',
-                    'effect' => 'Tu scelles une pièce ou un campement pour 8 heures : les oreilles indiscrètes et les esprits banals glissent. Une créature qui force l’entrée te réveille. 3 PA depuis la réserve de Wakfu.',
-                ],
-                [
-                    'name' => 'Veillée',
-                    'type' => $freeSlot,
-                    'pa' => '3',
-                    'effect' => 'Autour de ton symbole, 8 heures : les vivant·e·s qui dorment ici se réveillent si une créature hostile entre. 3 PA depuis la réserve de Wakfu.',
-                ],
+                $link('Bénédiction'),
+                $link('Sanctuaire'),
+                $link('Aide'),
+                $link('Zone de vérité'),
+                $link('Divination'),
             ],
             'aptitudes' => [
                 [
@@ -189,17 +168,12 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Pendant un voyage d’une journée, le groupe ignore un niveau de fatigue dû à la marche, au froid ou à la faim simple. 1×/semaine. Ça ne remplace pas l’eau.',
                 ],
-                [
-                    'name' => 'Main qui retient',
-                    'type' => $freeSlot,
-                    'effect' => 'Un allié à 6 cases qui tombe à 0 PV reste à 1. Réaction, 1×/scène. Ensuite, les comptes se règlent.',
-                ],
-                [
-                    'name' => 'Chemin de lanternes',
-                    'type' => $freeSlot,
-                    'pa' => '3',
-                    'effect' => 'Tu éclaires un sentier de 12 cases pour une heure. Les allié·e·s dessus ignorent le terrain difficile dû à l’obscurité. 3 PA depuis la réserve de Wakfu, 1×/jour.',
-                ],
+                $link('Sanctuaire'),
+                $link('Bénédiction'),
+                $link('Liberté de mouvement'),
+                $link('Petite hutte'),
+                $link('Assistance'),
+                $link('Banissement')
             ],
         ],
         15 => [
@@ -212,17 +186,12 @@ return [
                     'pa' => '4',
                     'effect' => 'Tu touches une créature morte depuis moins d’une heure, si le corps est entier. Elle revient à 1 PV, épuisée. 4 PA depuis la réserve de Wakfu, 1×/semaine. Ce n’est pas une résurrection de légende.',
                 ],
-                [
-                    'name' => 'Cercle consacré',
-                    'type' => $freeSlot,
-                    'pa' => '4',
-                    'effect' => 'Un cercle de 3 cases, 10 minutes. Les allié·e·s dedans ont avantage contre la peur et les effets maléfiques. 4 PA depuis la réserve de Wakfu, 1×/jour.',
-                ],
-                [
-                    'name' => 'Relique portée',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu charges un objet touché par ton culte. Le porteur a l’avantage au prochain jet de sauvegarde. Une scène, 1×/jour. L’objet n’est pas magique ensuite.',
-                ],
+                $link('Bénédiction'),
+                $link('Sanctuaire'),
+                $link('Apaisement des émotions'),
+                $link('Divination'),
+                $link('Scrutation'),
+                $link('Banissement')
             ],
             'aptitudes' => [
                 [
@@ -241,18 +210,11 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Une fois par mois, tu demandes une grâce nette : un mort récent revient (corps entier, un jour), un mal incurable cède, ou un seuil tient 24 heures. Le MJ tranche le prix, jamais un souhait libre.',
                 ],
-                [
-                    'name' => 'Temple de poche',
-                    'type' => $freeSlot,
-                    'pa' => '6',
-                    'effect' => 'Tu déplies un intérieur sûr pour 24 heures : lits, silence, eau, un autel. Rien de créé ne survit à la fin. 6 PA depuis la réserve de Wakfu, 1×/jour.',
-                ],
-                [
-                    'name' => 'Autel de poche',
-                    'type' => $freeSlot,
-                    'pa' => '6',
-                    'effect' => 'Tu déplies un petit lieu de culte pour 8 heures : silence, eau, place pour prier. 6 PA depuis la réserve de Wakfu, 1×/jour.',
-                ],
+                $link('Bénédiction'),
+                $link('Sanctuaire'),
+                $link('Divination'),
+                $link('Scrutation'),
+                $link('Zone de vérité'),
             ],
         ],
     ],

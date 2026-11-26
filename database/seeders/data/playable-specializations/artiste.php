@@ -13,6 +13,14 @@ declare(strict_types=1);
  */
 $pick = 'choix';
 
+$link = static function (string $name, string $slot = 'choix'): array {
+    return [
+        'name' => $name,
+        'type' => $slot,
+        'link' => true,
+    ];
+};
+
 return [
     'playable' => true,
     'envelope' => '2.4.6',
@@ -113,24 +121,13 @@ return [
                     'name' => 'Applaudissement',
                     'type' => $pick,
                     'pa' => '1',
-                    'effect' => 'Coût : 1 PA depuis la réserve de Wakfu. Un allié qui t’entend ou te voit (6 cases) gagne 1d4 sur son prochain jet d’attaque, de sauvegarde ou de compétence, jusqu’à la fin de son prochain tour. 1×/tour. Pas de cumul. Le dé passe à 1d6 au niveau 9 et à 1d8 au niveau 15.',
+                    'effect' => 'Un allié qui t’entend ou te voit (9 m) gagne 1d4 sur son prochain jet d’attaque, de sauvegarde ou de compétence, jusqu’à la fin de son prochain tour. 1×/tour. Pas de cumul. Le dé passe à 1d6 au niveau 9 et à 1d8 au niveau 15.',
                 ],
-                [
-                    'name' => 'Première scène',
-                    'type' => $pick,
-                    'effect' => '10 minutes de représentation. Avantage au prochain test de Chance pour obtenir un toit, un repas, un silence ou une info légère. 1×/scène.',
-                ],
-                [
-                    'name' => 'Illusion de scène',
-                    'type' => $pick,
-                    'pa' => '1',
-                    'effect' => 'Petit son ou petite image (objet, voix, flamme) dans 6 cases, une minute. Ça ne blesse pas. Un test de Perspicacité attentif la perce. En combat : 1 PA depuis la réserve de Wakfu.',
-                ],
-                [
-                    'name' => 'Affiche magique',
-                    'type' => $pick,
-                    'effect' => 'Tu écris une phrase sur une surface. Elle reste jusqu’à la fin de la scène. Tu choisis qui peut la lire. Une page. Les codes restent illisibles.',
-                ],
+                $link('Illusion mineure'),
+                $link('Message'),
+                $link('Texte illusoire'),
+                $link('Déguisement'),
+                $link('Assistance'),
             ],
         ],
         3 => [
@@ -145,24 +142,18 @@ return [
             'capacity_pick' => 1,
             'capacities' => [
                 [
-                    'name' => 'Déguisement de scène',
-                    'type' => $pick,
-                    'pa' => '1',
-                    'effect' => 'En 10 minutes tu changes visage, voix et habits. Ça tient une scène, ou 1 heure si tu parles peu. Si on te scrute : Supercherie contre Perspicacité. En combat pour le tenir : 1 PA depuis la réserve de Wakfu.',
-                ],
-                [
                     'name' => 'Numéro de scène',
                     'type' => $pick,
                     'archetype_variants' => [
                         'musicien' => [
                             'name' => 'Contre-refrain',
                             'pa' => '1',
-                            'effect' => 'Réaction. Coût : 1 PA depuis la réserve de Wakfu. Toi et un allié dans 6 cases qui t’entendent : avantage aux sauvegardes contre la peur et le charme jusqu’à la fin de ton prochain tour. 1×/scène.',
+                            'effect' => 'Réaction. Toi et un allié dans 9 m qui t’entendent : avantage aux sauvegardes contre la peur et le charme jusqu’à la fin de ton prochain tour. 1×/scène.',
                         ],
                         'saltimbanque' => [
                             'name' => 'Culbute',
                             'pa' => '1',
-                            'effect' => 'Coût : 1 PA depuis la réserve de Wakfu. Tu te déplaces de 3 cases. Le prochain test pour te tacle ou te saisir a un désavantage. 1×/tour.',
+                            'effect' => 'Tu te déplaces de 5 m. Le prochain test pour te tacle ou te saisir a un désavantage. 1×/tour.',
                         ],
                         'troubadour' => [
                             'name' => 'Vers qui ouvre',
@@ -171,16 +162,15 @@ return [
                         'voyant' => [
                             'name' => 'Petit tirage',
                             'pa' => '1',
-                            'effect' => 'Coût : 1 PA depuis la réserve de Wakfu. Le MJ te donne un présage court (oui / non / vague) sur une action qui arrive bientôt. 1×/scène.',
+                            'effect' => 'Le MJ te donne un présage court (oui / non / vague) sur une action qui arrive bientôt. 1×/scène.',
                         ],
                     ],
                 ],
-                [
-                    'name' => 'Fausse note utile',
-                    'type' => $pick,
-                    'pa' => '1',
-                    'effect' => 'Tu rates exprès. Un public, une garde ou un hôte détourne le regard. Un allié a l’avantage à son prochain test de Discrétion ou d’Escamotage. Coût : 1 PA depuis la réserve de Wakfu. 1×/scène.',
-                ],
+                $link('Déguisement'),
+                $link('Illusion mineure'),
+                $link('Bouche magique'),
+                $link('Suggestion'),
+                $link('Charme personne'),
             ],
         ],
         6 => [
@@ -206,23 +196,12 @@ return [
             ],
             'capacity_pick' => 1,
             'capacities' => [
-                [
-                    'name' => 'Accroche',
-                    'type' => $pick,
-                    'pa' => '2',
-                    'effect' => 'Une créature qui t’entend et te comprend : tu lui souffles une action simple (approche, attends, regarde ailleurs). Elle résiste avec un jet de Sagesse. Coût : 2 PA depuis la réserve de Wakfu. 1×/scène. Pas de suicide, pas de trahison évidente.',
-                ],
-                [
-                    'name' => 'Image de salle',
-                    'type' => $pick,
-                    'pa' => '2',
-                    'effect' => 'Image ou décor dans un cube de 4 cases, pour une scène. Ça ne blesse pas. Un examen attentif la perce. Coût : 2 PA depuis la réserve de Wakfu.',
-                ],
-                [
-                    'name' => 'Rappel de refrain',
-                    'type' => $pick,
-                    'effect' => 'Relance d’un test de Représentation ou de Persuasion raté, sauf sur un 1 naturel. 1×/scène.',
-                ],
+                $link('Silence'),
+                $link('Invisibilité'),
+                $link('Image majeure'),
+                $link('Suggestion'),
+                $link('Déguisement'),
+                $link('Zone de vérité'),
             ],
         ],
         9 => [
@@ -235,17 +214,6 @@ return [
             ],
             'capacity_pick' => 1,
             'capacities' => [
-                [
-                    'name' => 'Visage d’emprunt',
-                    'type' => $pick,
-                    'pa' => '3',
-                    'effect' => 'Tu prends l’apparence d’une personne vue. Durée : 1 heure, ou une scène en combat. Les proches ont l’avantage pour te démasquer. Coût : 3 PA depuis la réserve de Wakfu.',
-                ],
-                [
-                    'name' => 'Costume qui tient',
-                    'type' => $pick,
-                    'effect' => 'Un déguisement que tu poses tient 8 heures sans retouche, même sous la pluie. Un examen attentif peut encore te démasquer. 10 minutes pour l’habiller.',
-                ],
                 [
                     'name' => 'Tour de maître',
                     'type' => $pick,
@@ -271,6 +239,11 @@ return [
                         ],
                     ],
                 ],
+                $link('Invisibilité'),
+                $link('Image majeure'),
+                $link('Suggestion'),
+                $link('Détection des pensées'),
+                $link('Charme personne'),
             ],
         ],
         12 => [
@@ -294,23 +267,12 @@ return [
             ],
             'capacity_pick' => 1,
             'capacities' => [
-                [
-                    'name' => 'Légende',
-                    'type' => $pick,
-                    'effect' => 'Tu nommes une personne, un lieu ou un objet connus. En 10 minutes, tu récupères ce que la rumeur dit. 1×/scène.',
-                ],
-                [
-                    'name' => 'Double de scène',
-                    'type' => $pick,
-                    'pa' => '2',
-                    'effect' => 'Tu laisses une image de toi et tu te fais discret. Tu n’es pas invisible. Durée : 1 minute. Coût : 2 PA depuis la réserve de Wakfu. 1×/scène.',
-                ],
-                [
-                    'name' => 'Ombres de coulisse',
-                    'type' => $pick,
-                    'pa' => '2',
-                    'effect' => 'Tu disparais dans un décor, une foule ou un rideau. Jusqu’à ton prochain tour, on t’a perdu de vue. Coût : 2 PA depuis la réserve de Wakfu. 1×/scène. En terrain nu, ça ne marche pas.',
-                ],
+                $link('Confusion'),
+                $link('Image majeure'),
+                $link('Lévitation'),
+                $link('Envoi de message'),
+                $link('Invisibilité'),
+                $link('Zone de vérité'),
             ],
         ],
         15 => [
@@ -322,17 +284,6 @@ return [
             ],
             'capacity_pick' => 1,
             'capacities' => [
-                [
-                    'name' => 'Festin des héros',
-                    'type' => $pick,
-                    'pa' => '4',
-                    'effect' => 'Une heure de table et de spectacle. Jusqu’à 8 créatures. Chacune ignore un niveau de fatigue et gagne 1d4 PV temporaires jusqu’au prochain repos. Coût : 4 PA depuis la réserve de Wakfu. 1×/jour.',
-                ],
-                [
-                    'name' => 'Public conquis',
-                    'type' => $pick,
-                    'effect' => 'Après au moins 10 minutes de représentation, jusqu’à six spectateurs ordinaires te doivent une faveur mineure. Pas un noble, pas un contrat. 1×/jour.',
-                ],
                 [
                     'name' => 'Grande première',
                     'type' => $pick,
@@ -359,6 +310,11 @@ return [
                         ],
                     ],
                 ],
+                $link('Vol'),
+                $link('Image majeure'),
+                $link('Suggestion'),
+                $link('Scrutation'),
+                $link('Métamorphose'),
             ],
         ],
         20 => [
@@ -372,20 +328,13 @@ return [
                 [
                     'name' => 'Apothéose',
                     'type' => $pick,
-                    'effect' => '1×/jour. Pendant une minute, les allié·e·s qui te voient ou t’entendent ont l’avantage à tous leurs jets, et la première attaque contre toi rate.',
+                    'effect' => '1×/jour. Pendant une minute, les alliés qui te voient ou t’entendent ont l’avantage à tous leurs jets, et la première attaque contre toi rate.',
                 ],
-                [
-                    'name' => 'Théâtre de poche',
-                    'type' => $pick,
-                    'pa' => '6',
-                    'effect' => 'Tu déplies une salle pour 8 heures : planches, lumières, silence dehors. Rien de créé ne reste après. Coût : 6 PA depuis la réserve de Wakfu. 1×/jour.',
-                ],
-                [
-                    'name' => 'Loge de poche',
-                    'type' => $pick,
-                    'pa' => '6',
-                    'effect' => 'Tu déplies une loge pour 8 heures : miroir, costumes, silence. Rien de créé ne reste après. Coût : 6 PA depuis la réserve de Wakfu. 1×/jour.',
-                ],
+                $link('Petite hutte'),
+                $link('Scrutation'),
+                $link('Divination'),
+                $link('Métamorphose'),
+                $link('Image majeure'),
             ],
         ],
     ],

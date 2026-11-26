@@ -5,10 +5,20 @@ declare(strict_types=1);
 /**
  * Fiche jouable de spécialisation (gabarit 2.4.2.6) : le Voleur·euse.
  *
+ * Signature : Crochetage. Capacités catalogue de discrétion et d’illusion.
+ *
  * @return array<string, mixed>
  */
 $guaranteed = 'garantie';
 $freeSlot = 'choix';
+
+$link = static function (string $name, string $slot = 'choix'): array {
+    return [
+        'name' => $name,
+        'type' => $slot,
+        'link' => true,
+    ];
+};
 
 $choices = [
     1 => '3 compétences',
@@ -80,22 +90,12 @@ return [
                     'pa' => '2',
                     'effect' => 'Tu ouvres une serrure non magique en 1 minute (hors combat) ou 2 PA depuis la réserve de Wakfu (en combat, une tentative). Test d’Escamotage. Un échec ne casse pas l’outil, mais fait du bruit.',
                 ],
-                [
-                    'name' => 'Vol à la tire',
-                    'type' => $guaranteed,
-                    'pa' => '1',
-                    'effect' => 'Variante de garantie : tu prends un objet accessible (poche, table, ceinture) sans qu’on te voie. Test d’Escamotage contre Perception. En combat : 1 PA depuis la réserve de Wakfu, seulement si la cible ne te voit pas ou est occupée.',
-                ],
-                [
-                    'name' => 'Ombre de ruelle',
-                    'type' => $freeSlot,
-                    'effect' => 'Tant que tu es dans une ombre, une foule ou un décor chargé, tu as l’avantage à Discrétion pour te faufiler, pas pour rester invisible au milieu d’une place. Une scène.',
-                ],
-                [
-                    'name' => 'Fausse clé',
-                    'type' => $freeSlot,
-                    'effect' => 'En 10 minutes tu copies une clé que tu as en main. Ça ouvre cette serrure-là, pas la porte d’à côté. Une copie à la fois.',
-                ],
+                $link('Déguisement'),
+                $link('Passage sans trace'),
+                $link('Voir l\'invisible'),
+                $link('Illusion mineure'),
+                $link('Texte illusoire'),
+                $link('Lévitation'),
             ],
         ],
         3 => [
@@ -108,16 +108,11 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Tu suis une créature en ville sans qu’elle te remarque, tant que tu restes à 6 cases et dans la foule ou l’ombre. Test de Discrétion si elle se retourne vraiment. Une scène.',
                 ],
-                [
-                    'name' => 'Poche profonde',
-                    'type' => $freeSlot,
-                    'effect' => 'Un objet de poche (une main) devient introuvable sur toi sauf fouille magique ou déshabillage. Une scène, ou jusqu’à ce que tu le sors.',
-                ],
-                [
-                    'name' => 'Regard dans le dos',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu sais si on t’observe dans les 12 cases, sans savoir qui. Une scène. Ça ne perce pas l’invisibilité magique.',
-                ],
+                $link('Passage sans trace'),
+                $link('Déguisement'),
+                $link('Illusion mineure'),
+                $link('Voir l\'invisible'),
+                $link('Texte illusoire'),
             ],
             'aptitudes' => [
                 [
@@ -136,18 +131,14 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'En une heure tu imites un sceau, une signature, un laissez-passer vu. Test d’Escamotage ou de Supercherie contre Investigation si on l’examine. Une pièce, pas un livre.',
                 ],
-                [
-                    'name' => 'Fuite par les toits',
-                    'type' => $freeSlot,
-                    'pa' => '1',
-                    'effect' => 'En ville, tu ouvres une sortie verticale : toit, corniche, gouttière. 1 PA depuis la réserve de Wakfu en combat pour toi, 10 minutes pour faire passer le groupe. Test d’Acrobaties si c’est vilain.',
-                ],
-                [
-                    'name' => 'Bruit ailleurs',
-                    'type' => $freeSlot,
-                    'pa' => '1',
-                    'effect' => 'Tu crées un bruit à 6 cases (voix, chute, verre). Les regards partent. 1 PA depuis la réserve de Wakfu, 1×/scène.',
-                ],
+                $link('Déguisement'),
+                $link('Texte illusoire'),
+                $link('Illusion mineure'),
+                $link('Passage sans trace'),
+                $link('Lévitation'),
+                $link('Message'),
+                $link('Silence'),
+                $link('Invisibilité')
             ],
         ],
         9 => [
@@ -159,16 +150,14 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Tu ouvres une serrure magique ou un verrou de qualité, en 10 minutes. Test d’Escamotage difficile. Un échec alerte, ça ne te cloue pas. 1×/scène.',
                 ],
-                [
-                    'name' => 'Dérobade urbaine',
-                    'type' => $freeSlot,
-                    'effect' => 'Quand on te voit, tu disparais dans la foule ou l’ombre adjacente. Réaction, 1×/scène. Tu te retrouves à 3 cases, hors vue banale. Un regard magique tient encore.',
-                ],
-                [
-                    'name' => 'Toit voisin',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu gagnes un accès évident (corniche, gouttière, fenêtre mal close) pour quitter un bâtiment. 1 minute. Le MJ tranche s’il n’y a vraiment rien.',
-                ],
+                $link('Passage sans trace'),
+                $link('Voir l\'invisible'),
+                $link('Lévitation'),
+                $link('Déguisement'),
+                $link('Illusion mineure'),
+                $link('Oeil magique'),
+                $link('Invisibilité'),
+                $link('Vol')
             ],
             'aptitudes' => [
                 [
@@ -188,16 +177,12 @@ return [
                     'pa' => '3',
                     'effect' => 'Tu portes le nom et les papiers d’une personne vue. Une journée en ville, avantage à Supercherie contre qui ne la connaît pas vraiment. Les proches ont avantage pour te percer. 3 PA depuis la réserve de Wakfu.',
                 ],
-                [
-                    'name' => 'Cache d’équipe',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu poses une planque (coffre, trou, grenier) que le groupe retrouve. Elle tient une semaine, hors magie qui cherche. Une à la fois.',
-                ],
-                [
-                    'name' => 'Double fond',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu dissimules un objet de la taille d’un livre sur toi ou dans un meuble. Fouille banale : ratée. Fouille méthodique : jet opposé. Tient jusqu’à ce qu’on le trouve.',
-                ],
+                $link('Déguisement'),
+                $link('Illusion mineure'),
+                $link('Image majeure'),
+                $link('Texte illusoire'),
+                $link('Métamorphose'),
+                $link('Invisibilité')
             ],
         ],
         15 => [
@@ -210,16 +195,11 @@ return [
                     'pa' => '4',
                     'effect' => 'Tu cesses d’être là pour une minute : pas d’odeur, pas de trace, pas de bruit. On peut encore te percuter. 4 PA depuis la réserve de Wakfu, 1×/scène.',
                 ],
-                [
-                    'name' => 'Réseau de receleurs',
-                    'type' => $freeSlot,
-                    'effect' => 'En ville, tu trouves en une heure quelqu’un qui achète, cache ou échange un objet chaud. Avantage au test de Chance. Le MJ tranche le prix et le risque.',
-                ],
-                [
-                    'name' => 'Alibi prêt',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu poses un alibi simple (j’étais là, on m’a vu). Avantage au test de Supercherie pour cette version des faits. Une scène, 1×/jour.',
-                ],
+                $link('Passage sans trace'),
+                $link('Lévitation'),
+                $link('Voir l\'invisible'),
+                $link('Déguisement'),
+                $link('Illusion mineure'),
             ],
             'aptitudes' => [
                 [
@@ -239,18 +219,11 @@ return [
                     'pa' => '6',
                     'effect' => 'Une fois par mois, tu ouvres une porte qui ne devrait pas : chambre forte, salle du trône, coffre-fort de légende. Une heure de préparation, 6 PA depuis la réserve de Wakfu. Le MJ pose le prix, jamais un souhait.',
                 ],
-                [
-                    'name' => 'Planque',
-                    'type' => $freeSlot,
-                    'pa' => '6',
-                    'effect' => 'Tu déplies un intérieur sûr pour 24 heures : portes, lits, silence, une sortie de plus. Rien de créé ne survit. 6 PA depuis la réserve de Wakfu, 1×/jour.',
-                ],
-                [
-                    'name' => 'Trou de souris',
-                    'type' => $freeSlot,
-                    'pa' => '6',
-                    'effect' => 'Tu déplies une planque pour 8 heures : un réduit, deux couchages, une sortie. 6 PA depuis la réserve de Wakfu, 1×/jour.',
-                ],
+                $link('Passage sans trace'),
+                $link('Lévitation'),
+                $link('Déguisement'),
+                $link('Métamorphose'),
+                $link('Oeil magique'),
             ],
         ],
     ],

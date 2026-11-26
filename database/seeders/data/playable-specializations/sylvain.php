@@ -5,10 +5,20 @@ declare(strict_types=1);
 /**
  * Fiche jouable de spécialisation (gabarit 2.4.2.6) : le Sylvain·e.
  *
+ * Signature : Territoire lu. Capacités liées aux animaux et au passage discret.
+ *
  * @return array<string, mixed>
  */
 $guaranteed = 'garantie';
 $freeSlot = 'choix';
+
+$link = static function (string $name, string $slot = 'choix'): array {
+    return [
+        'name' => $name,
+        'type' => $slot,
+        'link' => true,
+    ];
+};
 
 $choices = [
     1 => '3 compétences',
@@ -75,26 +85,15 @@ return [
             ],
             'capacities' => [
                 [
-                    'name' => 'Langage des bêtes simples',
+                    'name' => 'Territoire lu',
                     'type' => $guaranteed,
-                    'pa' => '1',
-                    'effect' => 'Tu communiques des intentions simples (danger, nourriture, « pars ») avec un animal non magique. Une scène. 1 PA depuis la réserve de Wakfu en combat. Pas d’interrogatoire philosophique.',
+                    'effect' => 'Après 10 minutes en milieu naturel, tu sais si la zone est chassée, sacrée, malade, ou occupée par quelque chose de trop grand. Un fait, pas une carte complète.',
                 ],
-                [
-                    'name' => 'Sentier lu',
-                    'type' => $guaranteed,
-                    'effect' => 'Variante de garantie : 10 minutes en milieu naturel, tu sais par où on est passé aujourd’hui (bêtes, gens, charrettes). Pas une carte de donjon de pierre.',
-                ],
-                [
-                    'name' => 'Cueillette sûre',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu distingues plante utile, toxique, sacrée. Avantage aux tests d’Alchimiste et de Nature pour identifier une ressource végétale. 10 minutes.',
-                ],
-                [
-                    'name' => 'Eau claire',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu trouves de l’eau potable en nature (10 minutes) ou tu rends potable une gourde douteuse (1 minute). Suffisant pour le groupe, pas pour une armée.',
-                ],
+                $link('Communication avec les animaux'),
+                $link('Amitié avec les animaux'),
+                $link('Baies nourricières'),
+                $link('Passage sans trace'),
+                $link('Aide'),
             ],
         ],
         3 => [
@@ -107,16 +106,12 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'En milieu naturel, tu te déplaces sans laisser de traces évidentes. Avantage à la Discrétion seulement en nature, pas en donjon de pierre. Tant que tu ne cours pas.',
                 ],
-                [
-                    'name' => 'Territoire lu',
-                    'type' => $freeSlot,
-                    'effect' => 'Après 10 minutes, tu sais si la zone est chassée, sacrée, malade, ou occupée par quelque chose de trop grand. Un fait, pas une carte complète.',
-                ],
-                [
-                    'name' => 'Toile lue',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu lis une trace animale ou végétale récente : qui, dans quelle direction, depuis quand. 1 minute. Magie qui brouille : le MJ tranche.',
-                ],
+                $link('Communication avec les animaux'),
+                $link('Amitié avec les animaux'),
+                $link('Passage sans trace'),
+                $link('Baies nourricières'),
+                $link('Localiser une créature'),
+                $link('Charme personne')
             ],
             'aptitudes' => [
                 [
@@ -135,16 +130,11 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Hors combat, 10 minutes, des plantes : tu soignes 1d4 PV ou tu retires Empoisonné d’origine naturelle. 1×/créature/repos. Moins fort qu’un Mot.',
                 ],
-                [
-                    'name' => 'Venin et antidote',
-                    'type' => $freeSlot,
-                    'effect' => 'Pendant un repos, tu prépares une dose (poison ou antidote naturel). Poison : 1d4, une blessure. Antidote : comme Soins de sous-bois contre Empoisonné. 1 dose, 1×/jour.',
-                ],
-                [
-                    'name' => 'Feuille pour la pluie',
-                    'type' => $freeSlot,
-                    'effect' => 'En 10 minutes tu improvises un abri contre pluie, soleil ou froid mou pour six. Tient jusqu’au prochain repos. Pas un sort de glace.',
-                ],
+                $link('Baies nourricières'),
+                $link('Communication avec les animaux'),
+                $link('Amitié avec les animaux'),
+                $link('Passage sans trace'),
+                $link('Assistance'),
             ],
         ],
         9 => [
@@ -157,17 +147,12 @@ return [
                     'pa' => '3',
                     'effect' => 'Tu attires un animal local (messager, sentinelle, diversion) pour une scène. Pas un tank de combat. 3 PA depuis la réserve de Wakfu. L’Osamodas reste le roi des invocations.',
                 ],
-                [
-                    'name' => 'Racines gênantes',
-                    'type' => $freeSlot,
-                    'pa' => '2',
-                    'effect' => 'En nature, 2 PA depuis la réserve de Wakfu : une case devient terrain difficile jusqu’à la fin de ton prochain tour. 1×/tour. Pas un mur de Féca.',
-                ],
-                [
-                    'name' => 'Nid d’emprunt',
-                    'type' => $freeSlot,
-                    'effect' => 'Les bêtes non hostiles te laissent un gîte pour la nuit (terrier, branchage, anfractuosité). Six créatures, serrées. 1×/jour.',
-                ],
+                $link('Amitié avec les animaux'),
+                $link('Communication avec les animaux'),
+                $link('Localiser une créature'),
+                $link('Passage sans trace'),
+                $link('Petite hutte'),
+                $link('Communication avec les plantes')
             ],
             'aptitudes' => [
                 [
@@ -187,17 +172,12 @@ return [
                     'pa' => '3',
                     'effect' => 'En forêt, jungle ou marais : racines, brouillard de pollen ou essaim gênant, un cube de 4 cases, 1 minute. Les créatures dans la zone ont désavantage à la Perception. 3 PA depuis la réserve de Wakfu, 1×/scène.',
                 ],
-                [
-                    'name' => 'Piste d’âme',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu suis une créature à travers la nature même après la pluie, tant qu’elle n’a pas pris un zaap. 1 heure de piste, 1×/jour. Le MJ coupe si ça casse une quête.',
-                ],
-                [
-                    'name' => 'Sève qui ferme',
-                    'type' => $freeSlot,
-                    'pa' => '2',
-                    'effect' => 'Tu fermes une plaie naturelle (pas un sort) : 1d4 PV, ou tu stoppes un saignement. 1 minute hors combat, 2 PA depuis la réserve de Wakfu en combat. 1×/créature/jour.',
-                ],
+                $link('Passage sans trace'),
+                $link('Baies nourricières'),
+                $link('Communication avec les animaux'),
+                $link('Localiser une créature'),
+                $link('Illusion mineure'),
+                $link('Communication avec les plantes')
             ],
         ],
         15 => [
@@ -210,16 +190,11 @@ return [
                     'pa' => '4',
                     'effect' => 'Rituel, 1 heure : un camp en nature devient plus sûr pour 8 heures (veille, météo, bêtes curieuses). Pas un mur de Féca. 4 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
-                [
-                    'name' => 'Seigneur·e d’un lieu',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu te lies à un territoire (forêt, île, marais) en une nuit. Dedans : avantage aux tests de Sagesse et de Nature. Dehors : plus rien. Idéal campagne sédentaire ; à refuser en one-shot.',
-                ],
-                [
-                    'name' => 'Meute discrète',
-                    'type' => $freeSlot,
-                    'effect' => 'Jusqu’à trois bêtes simples déjà apprivoisées ou calmes t’accompagnent une heure et n’attaquent pas d’elles-mêmes. 1×/jour.',
-                ],
+                $link('Petite hutte'),
+                $link('Amitié avec les animaux'),
+                $link('Passage sans trace'),
+                $link('Alarme'),
+                $link('Assistance'),
             ],
             'aptitudes' => [
                 [
@@ -238,18 +213,11 @@ return [
                     'type' => $guaranteed,
                     'effect' => 'Un esprit de nature, un vieux Bouftou mythique ou une Sadida ancestrale te doit une audience. Avec le MJ, une fois. Pas un sort de contrôle de masse.',
                 ],
-                [
-                    'name' => 'Canopée de poche',
-                    'type' => $freeSlot,
-                    'pa' => '6',
-                    'effect' => 'Tu déplies un abri vivant pour 8 heures : ombre, fruits, silence des prédateurs. Rien de créé ne survit. 6 PA depuis la réserve de Wakfu, 1×/jour.',
-                ],
-                [
-                    'name' => 'Clairière de poche',
-                    'type' => $freeSlot,
-                    'pa' => '6',
-                    'effect' => 'Tu déplies une clairière pour 8 heures : mousse, eau, silence des arbres. 6 PA depuis la réserve de Wakfu, 1×/jour.',
-                ],
+                $link('Communication avec les animaux'),
+                $link('Amitié avec les animaux'),
+                $link('Baies nourricières'),
+                $link('Passage sans trace'),
+                $link('Liberté de mouvement'),
             ],
         ],
     ],
