@@ -29,6 +29,8 @@ php artisan items:seeder-import
 
 **Source de vérité : les fichiers** (`.md` des règles, `database/seeders/data/essential-pages.php`) ; le PDF est compilé depuis eux. La base suit par **synchro sûre** (`App\Support\Cms\SectionContentSync`) : chaque import mémorise l’empreinte du HTML écrit (`data.source_hash`). Une section inchangée depuis suit le fichier ; une section éditée dans le CMS est signalée **en conflit** et conservée. Pour imposer le fichier : `--accept=<numéros>` (règles) ou `project:seed --overwrite` (L’Essentiel). `--force-content` écrase tout, conflits compris : à éviter.
 
+L’identité d’une section règles est le **numéro TOC** (ex. 2.3.4), pas le libellé : renommer le titre dans la TdM met à jour le slug et conserve le conflit CMS. Une entrée vraiment retirée de la TdM purge la section texte orpheline.
+
 ```bash
 php artisan pages:import-rules-toc --dry-run          # plan : créées, mises à jour, déjà à jour, conflits
 php artisan pages:import-rules-toc                    # applique les sections non éditées dans le CMS
