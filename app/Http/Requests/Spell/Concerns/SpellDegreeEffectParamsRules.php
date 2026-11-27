@@ -10,6 +10,10 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 /**
  * Règles partagées pour {@code params} des effets de degré de sort.
+ *
+ * Laravel omet les clés d’un tableau sans règle dédiée ({@code validated()}).
+ * {@see SpellDegreeService::syncEffects} recrée les lignes : une clé absente
+ * est une perte (texte « autre » en {@code value}, {@code dice_formula}, …).
  */
 trait SpellDegreeEffectParamsRules
 {
@@ -22,12 +26,23 @@ trait SpellDegreeEffectParamsRules
 
         return [
             "{$p}" => 'nullable|array',
+            // Catch-all : round-trip du JSON params (value, dice_formula, dofus_effect_id…).
+            "{$p}.*" => 'nullable',
             "{$p}.characteristic" => 'nullable|string|max:64',
+            "{$p}.value" => 'nullable',
             "{$p}.value_formula" => 'nullable|string|max:500',
             "{$p}.value_formula_crit" => 'nullable|string|max:500',
+            "{$p}.dice_formula" => 'nullable|string|max:500',
             "{$p}.life_steal_formula" => 'nullable|string|max:500',
             "{$p}.cells_formula" => 'nullable|string|max:500',
+            "{$p}.duration_formula" => 'nullable|string|max:255',
             "{$p}.movement_kind" => 'nullable|string|in:movement,jump,teleport,push,pull',
+            "{$p}.effect_direction" => 'nullable|string|in:bonus,malus,steal,action',
+            "{$p}.element" => 'nullable|integer|min:0|max:6',
+            "{$p}.dofus_element_id" => 'nullable|integer|min:0|max:6',
+            "{$p}.dofus_effect_id" => 'nullable|integer|min:0',
+            "{$p}.value_converted" => 'nullable',
+            "{$p}.life_steal_value_converted" => 'nullable',
             "{$p}.creature_id" => 'nullable|integer|exists:creatures,id',
             "{$p}.monster_id" => 'nullable|integer|exists:monsters,id',
             "{$p}.condition_id" => 'nullable|integer|exists:conditions,id',

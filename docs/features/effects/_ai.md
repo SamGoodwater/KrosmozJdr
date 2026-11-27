@@ -42,6 +42,8 @@
     `value_formula` + `value_formula_crit`, `duration_formula`, `scope` visible (pas dans Avancé);
     `monster_id` legacy OK. Affichage : si `value_formula` est vide, la ligne reprend
     `params.value` (retrait de PA/PM, bonus chiffré, texte d’un effet « autre »).
+    `SpellDegreeEffectParamsRules` doit lister (ou catch-all `params.*`) ces clés JSON :
+    `validated()` les omet sinon, et `syncEffects` recrée les lignes sans elles.
   - Facteurs multiples (`params`) : `applies_to` (`caster`|`targets`|`caster_and_targets`),
     `value_up_to` (bool, « jusqu’à » la formule), `trigger_turn` (int 0..255, défaut 0 =
     au lancer ; 1 = début du tour n+1 du lanceur ; durée part du déclenchement ; pas de
