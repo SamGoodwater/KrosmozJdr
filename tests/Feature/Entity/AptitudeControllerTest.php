@@ -113,4 +113,29 @@ class AptitudeControllerTest extends TestCase
         $this->assertSame(3, (int) $spec->aptitudes()->where('aptitudes.id', $a->id)->first()?->pivot->level);
         $this->assertSame(9, (int) $spec->aptitudes()->where('aptitudes.id', $b->id)->first()?->pivot->level);
     }
+
+    public function test_specialization_rejects_aptitude_map_payload_without_wiping(): void
+    {
+        $admin = $this->adminUser();
+        $spec = Specialization::factory()->create([
+            'state' => Specialization::STATE_PLAYABLE,
+            'write_level' => User::ROLE_ADMIN,
+            'created_by' => $admin->id,
+        ]);
+        $a = Aptitude::factory()->create(['name' => 'Déjà liée', 'state' => Aptitude::STATE_PLAYABLE]);
+        $spec->aptitudes()->sync([$a->id => ['level' => 3]]);
+
+        $this->actingAs($admin)
+            ->from(route('entities.specializations.edit', $spec))
+            ->patch(route('entities.specializations.updateAptitudes', $spec), [
+                'aptitudes' => [
+                    (string) $a->id => ['level' => 9],
+                ],
+            ])
+            ->assertRedirect()
+            ->assertSessionHasErrors();
+
+        $this->assertSame(1, $spec->aptitudes()->count());
+        $this->assertSame(3, (int) $spec->aptitudes()->where('aptitudes.id', $a->id)->first()?->pivot->level);
+    }
 }
