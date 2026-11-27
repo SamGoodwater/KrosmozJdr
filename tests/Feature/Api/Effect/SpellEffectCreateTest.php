@@ -115,6 +115,58 @@ final class SpellEffectCreateTest extends TestCase
         $this->assertSame('fire', $pivot->params['characteristic'] ?? null);
     }
 
+    public function test_game_master_create_persists_conditions_and_trigger_turn(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $spell = Spell::factory()->create(['created_by' => $gm->id, 'write_level' => 0]);
+        $sub = SubEffect::query()->create([
+            'slug' => 'booster-create-params-'.uniqid(),
+            'type_slug' => 'booster',
+            'template_text' => 'Boost [value].',
+            'variables_allowed' => ['value'],
+            'param_schema' => [],
+        ]);
+
+        $response = $this->actingAs($gm)->postJson('/api/effects/spell-effects', [
+            'spell_id' => $spell->id,
+            'name' => 'Boost différé',
+            'target_type' => 'direct',
+            'initial_sub_effects' => [
+                [
+                    'sub_effect_id' => $sub->id,
+                    'order' => 0,
+                    'scope' => 'general',
+                    'params' => [
+                        'characteristic' => 'pa',
+                        'value_formula' => '1',
+                        'trigger_turn' => 2,
+                        'applies_to' => 'targets',
+                        'conditions' => [
+                            ['left' => '[level]', 'op' => '>=', 'right' => '4'],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $response->assertCreated();
+        $effectId = (int) $response->json('data.id');
+        $degreeId = (int) EffectDegree::query()
+            ->where('effect_id', $effectId)
+            ->where('degree', 1)
+            ->value('id');
+        $pivot = EffectSubEffect::query()
+            ->where('effect_degree_id', $degreeId)
+            ->where('sub_effect_id', $sub->id)
+            ->first();
+        $this->assertNotNull($pivot);
+        $this->assertSame(2, $pivot->params['trigger_turn'] ?? null);
+        $this->assertSame(
+            [['left' => '[level]', 'op' => '>=', 'right' => '4']],
+            $pivot->params['conditions'] ?? null,
+        );
+    }
+
     public function test_player_cannot_create_an_effect_from_the_spell_page(): void
     {
         $player = User::factory()->create(['role' => User::ROLE_PLAYER]);

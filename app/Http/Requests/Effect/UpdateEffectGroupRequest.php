@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Effect;
 
+use App\Http\Requests\Spell\Concerns\SpellDegreeEffectParamsRules;
 use App\Models\EffectDegree;
 use App\Rules\ValidAreaNotation;
 use App\Services\Effect\EffectTextSanitizer;
@@ -13,6 +14,8 @@ use Illuminate\Validation\Validator;
 
 class UpdateEffectGroupRequest extends FormRequest
 {
+    use SpellDegreeEffectParamsRules;
+
     public function authorize(): bool
     {
         return $this->user()?->verifyRole('game_master') ?? false;
@@ -23,7 +26,7 @@ class UpdateEffectGroupRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        return array_merge([
             'common' => 'required|array',
             'common.name' => 'nullable|string|max:255',
             'common.description' => 'nullable|string|max:65535',
@@ -46,27 +49,15 @@ class UpdateEffectGroupRequest extends FormRequest
             'degrees.*.effect_sub_effects.*.logic_group' => 'nullable|string|max:64',
             'degrees.*.effect_sub_effects.*.logic_operator' => 'nullable|string|in:AND,OR',
             'degrees.*.effect_sub_effects.*.logic_condition' => 'nullable|string|max:255',
-            'degrees.*.effect_sub_effects.*.params' => 'nullable|array',
-            'degrees.*.effect_sub_effects.*.params.characteristic' => 'nullable|string|max:64',
-            'degrees.*.effect_sub_effects.*.params.value_formula' => 'nullable|string|max:500',
-            'degrees.*.effect_sub_effects.*.params.value_formula_crit' => 'nullable|string|max:500',
-            'degrees.*.effect_sub_effects.*.params.life_steal_formula' => 'nullable|string|max:500',
-            'degrees.*.effect_sub_effects.*.params.cells_formula' => 'nullable|string|max:500',
-            'degrees.*.effect_sub_effects.*.params.movement_kind' => 'nullable|string|in:movement,jump,teleport,push,pull',
+            'degrees.*.effect_sub_effects.*.crit_only' => 'nullable|boolean',
+            // Clés legacy hors canal natif (élément Dofus, formule convertie…).
             'degrees.*.effect_sub_effects.*.params.effect_direction' => 'nullable|string|in:bonus,malus,steal,action',
             'degrees.*.effect_sub_effects.*.params.element' => 'nullable|integer|min:0|max:6',
             'degrees.*.effect_sub_effects.*.params.dofus_element_id' => 'nullable|integer|min:0|max:6',
             'degrees.*.effect_sub_effects.*.params.value_converted' => 'nullable',
             'degrees.*.effect_sub_effects.*.params.life_steal_value_converted' => 'nullable',
             'degrees.*.effect_sub_effects.*.params.dice_formula' => 'nullable|string|max:64',
-            'degrees.*.effect_sub_effects.*.params.monster_id' => 'nullable|integer|exists:monsters,id',
-            'degrees.*.effect_sub_effects.*.params.condition_id' => 'nullable|integer|exists:conditions,id',
-            'degrees.*.effect_sub_effects.*.params.condition_dofusdb_id' => 'nullable|integer|min:0',
-            'degrees.*.effect_sub_effects.*.params.condition_name' => 'nullable|string|max:255',
-            'degrees.*.effect_sub_effects.*.params.teleport' => 'nullable|boolean',
-            'degrees.*.effect_sub_effects.*.params.dispellable' => 'nullable|boolean',
-            'degrees.*.effect_sub_effects.*.crit_only' => 'nullable|boolean',
-        ];
+        ], $this->spellDegreeEffectParamsRules('degrees.*.effect_sub_effects.*.params'));
     }
 
     protected function passedValidation(): void

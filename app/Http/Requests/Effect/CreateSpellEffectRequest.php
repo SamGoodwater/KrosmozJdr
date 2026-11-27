@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Effect;
 
+use App\Http\Requests\Spell\Concerns\SpellDegreeEffectParamsRules;
 use App\Models\Effect;
 use App\Rules\ValidAreaNotation;
 use App\Services\Effect\EffectTextSanitizer;
@@ -15,6 +16,8 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class CreateSpellEffectRequest extends FormRequest
 {
+    use SpellDegreeEffectParamsRules;
+
     public function authorize(): bool
     {
         return $this->user()?->verifyRole('game_master') ?? false;
@@ -25,7 +28,7 @@ class CreateSpellEffectRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        return array_merge([
             'spell_id' => 'required|integer|exists:spells,id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:65535',
@@ -47,27 +50,14 @@ class CreateSpellEffectRequest extends FormRequest
             'initial_sub_effects.*.logic_group' => 'nullable|string|max:64',
             'initial_sub_effects.*.logic_operator' => 'nullable|string|in:AND,OR',
             'initial_sub_effects.*.logic_condition' => 'nullable|string|max:255',
-            'initial_sub_effects.*.params' => 'nullable|array',
-            'initial_sub_effects.*.params.characteristic' => 'nullable|string|max:64',
-            'initial_sub_effects.*.params.value_formula' => 'nullable|string|max:500',
-            'initial_sub_effects.*.params.value_formula_crit' => 'nullable|string|max:500',
-            'initial_sub_effects.*.params.life_steal_formula' => 'nullable|string|max:500',
-            'initial_sub_effects.*.params.cells_formula' => 'nullable|string|max:500',
-            'initial_sub_effects.*.params.movement_kind' => 'nullable|string|in:movement,jump,teleport,push,pull',
+            'initial_sub_effects.*.crit_only' => 'nullable|boolean',
             'initial_sub_effects.*.params.effect_direction' => 'nullable|string|in:bonus,malus,steal,action',
             'initial_sub_effects.*.params.element' => 'nullable|integer|min:0|max:6',
             'initial_sub_effects.*.params.dofus_element_id' => 'nullable|integer|min:0|max:6',
             'initial_sub_effects.*.params.value_converted' => 'nullable',
             'initial_sub_effects.*.params.life_steal_value_converted' => 'nullable',
             'initial_sub_effects.*.params.dice_formula' => 'nullable|string|max:64',
-            'initial_sub_effects.*.params.monster_id' => 'nullable|integer|exists:monsters,id',
-            'initial_sub_effects.*.params.condition_id' => 'nullable|integer|exists:conditions,id',
-            'initial_sub_effects.*.params.condition_dofusdb_id' => 'nullable|integer|min:0',
-            'initial_sub_effects.*.params.condition_name' => 'nullable|string|max:255',
-            'initial_sub_effects.*.params.teleport' => 'nullable|boolean',
-            'initial_sub_effects.*.params.dispellable' => 'nullable|boolean',
-            'initial_sub_effects.*.crit_only' => 'nullable|boolean',
-        ];
+        ], $this->spellDegreeEffectParamsRules('initial_sub_effects.*.params'));
     }
 
     protected function passedValidation(): void
